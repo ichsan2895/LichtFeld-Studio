@@ -392,7 +392,9 @@ namespace lfs::vis::gui {
         fbo_.unbind(prev_fbo);
 
         assert(input_ && input_->bg_draw_list);
-        fbo_.blitToDrawListOpaque(input_->bg_draw_list, x, y, w, display_h);
+        void* draw_list = (foreground_ && input_->fg_draw_list) ? input_->fg_draw_list
+                                                                : input_->bg_draw_list;
+        fbo_.blitToDrawListOpaque(draw_list, x, y, w, display_h);
 
         if (height_mode_ == HeightMode::Content && !content_dirty_) {
             auto* frame = document_->GetElementById("window-frame");
