@@ -595,6 +595,7 @@
     "seq_follow": "Camara sigue cabezal",
     "seq_film_strip": "Tira de miniaturas sobre linea de tiempo",
     "seq_preview_size": "Escala de vista previa PiP",
+    "seq_pip_preview": "Mostrar u ocultar la ventana de vista previa PiP",
     "seq_quality": "Menor = mejor calidad, archivo mayor",
     "seq_export": "Renderizar a archivo de video"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Seguir reproduccion",
     "show_film_strip": "Mostrar tira de fotogramas",
     "preview_size": "Tamano de vista previa",
+    "show_pip_preview": "Mostrar vista previa",
     "save_path": "Guardar ruta...",
     "load_path": "Cargar ruta...",
     "clear_all_keyframes": "Borrar todos los keyframes",

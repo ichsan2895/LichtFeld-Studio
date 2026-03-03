@@ -607,6 +607,7 @@
     "seq_follow": "Camera follows playhead",
     "seq_film_strip": "Thumbnail strip above timeline",
     "seq_preview_size": "PiP preview scale",
+    "seq_pip_preview": "Show or hide the picture-in-picture preview window",
     "seq_quality": "Lower = better quality, larger file",
     "seq_export": "Render to video file"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Follow Playback",
     "show_film_strip": "Show Film Strip",
     "preview_size": "Preview Size",
+    "show_pip_preview": "Show Preview",
     "save_path": "Save Path...",
     "load_path": "Load Path...",
     "clear_all_keyframes": "Clear All Keyframes",

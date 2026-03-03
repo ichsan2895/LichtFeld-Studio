@@ -4,7 +4,7 @@
 </head>
 <body id="body">
     <div id="panel">
-        <div id="header">
+        <div id="transport-row">
             <div id="transport">
                 <div id="btn-skip-back" class="transport-btn" data-tooltip="tooltip.seq_first">
                     <img class="transport-icon" src="../icon/sequencer/skip-back.png" />
@@ -25,6 +25,12 @@
                     <img class="transport-icon" src="../icon/sequencer/plus.png" />
                 </div>
             </div>
+            <div id="time-display">
+                <span id="current-time">0:00.00</span>
+                <span id="duration"></span>
+            </div>
+        </div>
+        <div id="header">
             <div id="timeline">
                 <div id="ruler"></div>
                 <div id="track-area">
@@ -36,10 +42,6 @@
                         <div id="playhead-handle"></div>
                     </div>
                 </div>
-            </div>
-            <div id="time-display">
-                <span id="current-time">0:00.00</span>
-                <span id="duration"></span>
             </div>
         </div>
         <div id="easing-stripe"></div>

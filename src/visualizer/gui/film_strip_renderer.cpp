@@ -59,11 +59,16 @@ namespace lfs::vis::gui {
     }
 
     int FilmStripRenderer::findSlot(const float time, const float tolerance) const {
+        int stale_match = -1;
         for (int i = 0; i < MAX_SLOTS; ++i) {
-            if (slots_[i].valid && std::abs(slots_[i].time - time) < tolerance)
-                return i;
+            if (slots_[i].valid && std::abs(slots_[i].time - time) < tolerance) {
+                if (slots_[i].generation == generation_)
+                    return i;
+                if (stale_match < 0)
+                    stale_match = i;
+            }
         }
-        return -1;
+        return stale_match;
     }
 
     int FilmStripRenderer::allocateSlot(const uint32_t current_frame) {
@@ -175,7 +180,8 @@ namespace lfs::vis::gui {
                 }
 
                 for (size_t i = 0; i < thumbs_.size(); ++i) {
-                    if (thumbs_[i].slot_idx < 0)
+                    if (thumbs_[i].slot_idx < 0 ||
+                        slots_[thumbs_[i].slot_idx].generation != generation_)
                         uncached_.push_back(i);
                 }
 
@@ -183,17 +189,24 @@ namespace lfs::vis::gui {
                     return thumbs_[a].dist_from_center < thumbs_[b].dist_from_center;
                 });
 
+                const int max_renders = burst_remaining_ > 0
+                                            ? BURST_RENDERS_PER_FRAME
+                                            : MAX_RENDERS_PER_FRAME;
+
                 int renders = 0;
                 for (const size_t idx : uncached_) {
-                    if (renders >= MAX_RENDERS_PER_FRAME)
+                    if (renders >= max_renders)
                         break;
 
                     const int slot = allocateSlot(frame_counter_);
                     if (renderThumbnail(slot, thumbs_[idx].time, controller, rm, sm)) {
+                        slots_[slot].generation = generation_;
                         thumbs_[idx].slot_idx = slot;
                         ++renders;
                     }
                 }
+                if (burst_remaining_ > 0)
+                    --burst_remaining_;
             }
         }
 
@@ -270,19 +283,22 @@ namespace lfs::vis::gui {
     }
 
     void FilmStripRenderer::invalidateAll() {
-        for (auto& slot : slots_)
-            slot.valid = false;
+        ++generation_;
+        burst_remaining_ = BURST_FRAMES;
     }
 
     void FilmStripRenderer::destroyGLResources() {
         for (auto& slot : slots_) {
             slot.texture = {};
             slot.valid = false;
+            slot.generation = 0;
         }
         fbo_ = {};
         depth_rbo_ = {};
         gl_initialized_ = false;
         gl_init_failed_ = false;
+        generation_ = 0;
+        burst_remaining_ = 0;
     }
 
 } // namespace lfs::vis::gui

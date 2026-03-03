@@ -117,8 +117,8 @@ namespace lfs::vis::gui {
             const float px = panel_->cachedPanelX();
             const float pw = panel_->cachedPanelWidth();
             tl_geo_ = {
-                px + (panel_config::TRANSPORT_WIDTH + panel_config::INNER_PADDING) * dp,
-                pw - (panel_config::TRANSPORT_WIDTH + panel_config::TIME_DISPLAY_WIDTH + panel_config::INNER_PADDING * 2.0f) * dp,
+                px + panel_config::INNER_PADDING_H * dp,
+                pw - panel_config::INNER_PADDING_H * 2.0f * dp,
                 px, pw, panel_->cachedPanelY(), dp};
         }
         renderFilmStrip(ctx);
@@ -572,7 +572,6 @@ namespace lfs::vis::gui {
         const float timeline_width = tl_geo_.timeline_width;
         const float px = tl_geo_.panel_x;
         const float pw = tl_geo_.panel_width;
-
         if (timeline_width <= 0.0f)
             return;
 
@@ -758,7 +757,8 @@ namespace lfs::vis::gui {
         const float dp = tl_geo_.dp;
         const float px = std::round(panel_->cachedPlayheadScreenX());
         const float panel_y = tl_geo_.panel_y;
-        const float line_top = panel_y + (panel_config::INNER_PADDING +
+        const float line_top = panel_y + (panel_config::TRANSPORT_ROW_HEIGHT +
+                                          panel_config::INNER_PADDING +
                                           panel_config::RULER_HEIGHT + 4.0f) *
                                              dp;
         const float strip_offset = ui_state_.show_film_strip ? FilmStripRenderer::STRIP_HEIGHT : 0.0f;
@@ -805,6 +805,9 @@ namespace lfs::vis::gui {
     }
 
     void SequencerUIManager::renderKeyframePreview(const UIContext& ctx) {
+        if (!ui_state_.show_pip_preview)
+            return;
+
         const bool is_playing = !controller_.isStopped();
         const auto selected = controller_.selectedKeyframe();
 
@@ -864,6 +867,9 @@ namespace lfs::vis::gui {
     }
 
     void SequencerUIManager::drawPipPreviewWindow(const ViewportLayout& viewport) {
+        if (!ui_state_.show_pip_preview)
+            return;
+
         const bool is_playing = !controller_.isStopped();
         const auto selected = controller_.selectedKeyframe();
 
@@ -885,7 +891,9 @@ namespace lfs::vis::gui {
         const float scale = ui_state_.pip_preview_scale;
         constexpr float MARGIN = 16.0f;
         const float dp = panel_->cachedDpRatio();
-        const float panel_height = (90.0f + panel_config::EASING_STRIPE_HEIGHT) * dp +
+        const float panel_height = (panel_config::HEIGHT + panel_config::PADDING_BOTTOM +
+                                    panel_config::EASING_STRIPE_HEIGHT) *
+                                       dp +
                                    (ui_state_.show_film_strip ? FilmStripRenderer::STRIP_HEIGHT : 0.0f);
         constexpr float PADDING = 4.0f;
         constexpr float TITLE_HEIGHT = 18.0f;

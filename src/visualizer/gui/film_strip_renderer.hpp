@@ -22,7 +22,9 @@ namespace lfs::vis::gui {
         static constexpr int THUMB_WIDTH = 128;
         static constexpr int THUMB_HEIGHT = 72;
         static constexpr int MAX_SLOTS = 32;
-        static constexpr int MAX_RENDERS_PER_FRAME = 2;
+        static constexpr int MAX_RENDERS_PER_FRAME = 4;
+        static constexpr int BURST_RENDERS_PER_FRAME = 16;
+        static constexpr int BURST_FRAMES = 3;
         static constexpr float STRIP_HEIGHT = 56.0f;
         static constexpr float THUMB_PADDING = 4.0f;
 
@@ -42,6 +44,7 @@ namespace lfs::vis::gui {
             rendering::Texture texture;
             float time = -1.0f;
             uint32_t frame_used = 0;
+            uint32_t generation = 0;
             bool valid = false;
         };
 
@@ -68,6 +71,8 @@ namespace lfs::vis::gui {
 
         std::vector<ThumbInfo> thumbs_;
         std::vector<size_t> uncached_;
+        uint32_t generation_ = 0;
+        int burst_remaining_ = 0;
 
         static constexpr float SPROCKET_W = 4.0f;
         static constexpr float SPROCKET_H = 3.0f;

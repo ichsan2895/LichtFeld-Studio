@@ -378,6 +378,7 @@ namespace lfs::vis {
                 state.snap_interval = s.snap_interval;
                 state.playback_speed = s.playback_speed;
                 state.follow_playback = s.follow_playback;
+                state.show_pip_preview = s.show_pip_preview;
                 state.pip_preview_scale = s.pip_preview_scale;
                 state.show_film_strip = s.show_film_strip;
             }
@@ -387,6 +388,7 @@ namespace lfs::vis {
             s.snap_interval = state.snap_interval;
             s.playback_speed = state.playback_speed;
             s.follow_playback = state.follow_playback;
+            s.show_pip_preview = state.show_pip_preview;
             s.pip_preview_scale = state.pip_preview_scale;
             s.show_film_strip = state.show_film_strip;
             const auto sel = gm->sequencer().selectedKeyframe();

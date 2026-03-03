@@ -88,6 +88,17 @@ namespace lfs::python {
                             LOG_ERROR("Modal callback error: {}", e.what());
                         }
                     };
+                    const std::string cancel_label = modal.buttons.size() >= 2
+                                                         ? modal.buttons.back()
+                                                         : "";
+                    req.on_cancel = [py_cb, cancel_label]() {
+                        nb::gil_scoped_acquire gil;
+                        try {
+                            (*py_cb)(cancel_label);
+                        } catch (const std::exception& e) {
+                            LOG_ERROR("Modal cancel callback error: {}", e.what());
+                        }
+                    };
                 }
                 break;
             }

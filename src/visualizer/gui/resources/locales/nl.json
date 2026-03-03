@@ -595,6 +595,7 @@
     "seq_follow": "Camera volgt afspeelkop",
     "seq_film_strip": "Miniatuurstrip boven tijdlijn",
     "seq_preview_size": "PiP-voorbeeldschaal",
+    "seq_pip_preview": "PiP-voorbeeldvenster tonen of verbergen",
     "seq_quality": "Lager = betere kwaliteit, groter bestand",
     "seq_export": "Renderen naar videobestand"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Afspelen volgen",
     "show_film_strip": "Filmstrip tonen",
     "preview_size": "Voorbeeldgrootte",
+    "show_pip_preview": "Voorbeeld tonen",
     "save_path": "Pad opslaan...",
     "load_path": "Pad laden...",
     "clear_all_keyframes": "Alle keyframes wissen",

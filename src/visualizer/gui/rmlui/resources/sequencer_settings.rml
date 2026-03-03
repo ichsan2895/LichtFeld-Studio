@@ -60,10 +60,18 @@
       </label>
     </div>
 
-    <div class="setting-row" data-tooltip="tooltip.seq_preview_size">
-      <input type="range" class="setting-slider" data-value="pip_preview_scale" min="0.5" max="2.0" step="0.01" />
-      <span class="slider-value">{{pip_preview_scale | format_float(2)}}</span>
-      <span class="prop-label">{{label_preview_size}}</span>
+    <div class="setting-row" data-tooltip="tooltip.seq_pip_preview">
+      <label class="setting-label">
+        <input type="checkbox" data-checked="show_pip_preview" />
+        <span>{{label_show_pip_preview}}</span>
+      </label>
+    </div>
+    <div class="indent" data-if="show_pip_preview">
+      <div class="setting-row" data-tooltip="tooltip.seq_preview_size">
+        <input type="range" class="setting-slider" data-value="pip_preview_scale" min="0.5" max="2.0" step="0.01" />
+        <span class="slider-value">{{pip_preview_scale | format_float(2)}}</span>
+        <span class="prop-label">{{label_preview_size}}</span>
+      </div>
     </div>
 
     <div class="separator"></div>

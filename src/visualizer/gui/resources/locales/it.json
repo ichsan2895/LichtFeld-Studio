@@ -595,6 +595,7 @@
     "seq_follow": "Camera segue testina",
     "seq_film_strip": "Striscia miniature sopra la timeline",
     "seq_preview_size": "Scala anteprima PiP",
+    "seq_pip_preview": "Mostra o nascondi la finestra anteprima PiP",
     "seq_quality": "Piu basso = migliore qualita, file piu grande",
     "seq_export": "Esporta come file video"
   },
@@ -973,6 +974,7 @@
     "follow_playback": "Segui riproduzione",
     "show_film_strip": "Mostra striscia di fotogrammi",
     "preview_size": "Dimensione anteprima",
+    "show_pip_preview": "Mostra anteprima",
     "save_path": "Salva percorso...",
     "load_path": "Carica percorso...",
     "clear_all_keyframes": "Cancella tutti i keyframe",

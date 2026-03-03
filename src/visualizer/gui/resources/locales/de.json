@@ -595,6 +595,7 @@
     "seq_follow": "Kamera folgt Abspielkopf",
     "seq_film_strip": "Miniaturstreifen ueber Zeitleiste",
     "seq_preview_size": "PiP-Vorschauskalierung",
+    "seq_pip_preview": "Bild-in-Bild-Vorschaufenster anzeigen oder ausblenden",
     "seq_quality": "Niedriger = bessere Qualitaet, groessere Datei",
     "seq_export": "Als Videodatei rendern"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Wiedergabe folgen",
     "show_film_strip": "Filmstreifen anzeigen",
     "preview_size": "Vorschaugroesse",
+    "show_pip_preview": "Vorschau anzeigen",
     "save_path": "Pfad speichern...",
     "load_path": "Pfad laden...",
     "clear_all_keyframes": "Alle Keyframes loeschen",

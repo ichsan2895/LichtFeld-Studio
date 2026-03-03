@@ -438,6 +438,7 @@ namespace lfs::python {
         float snap_interval = 0.5f;
         float playback_speed = 1.0f;
         bool follow_playback = false;
+        bool show_pip_preview = true;
         float pip_preview_scale = 1.0f;
         bool show_film_strip = true;
         int preset = 0;

@@ -595,6 +595,7 @@
     "seq_follow": "Camera suit la tete de lecture",
     "seq_film_strip": "Bande de miniatures au-dessus de la timeline",
     "seq_preview_size": "Echelle apercu PiP",
+    "seq_pip_preview": "Afficher ou masquer la fenetre d'apercu PiP",
     "seq_quality": "Plus bas = meilleure qualite, fichier plus gros",
     "seq_export": "Exporter en fichier video"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Suivre la lecture",
     "show_film_strip": "Afficher la pellicule",
     "preview_size": "Taille de l'apercu",
+    "show_pip_preview": "Afficher l'apercu",
     "save_path": "Enregistrer le chemin...",
     "load_path": "Charger le chemin...",
     "clear_all_keyframes": "Supprimer tous les keyframes",

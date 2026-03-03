@@ -595,6 +595,7 @@
     "seq_follow": "カメラが再生ヘッドに追従",
     "seq_film_strip": "タイムライン上のサムネイル",
     "seq_preview_size": "PiPプレビュースケール",
+    "seq_pip_preview": "PiPプレビューウィンドウの表示切替",
     "seq_quality": "低い = 高品質、大きいファイル",
     "seq_export": "動画ファイルに書き出し"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "再生に追従",
     "show_film_strip": "フィルムストリップを表示",
     "preview_size": "プレビューサイズ",
+    "show_pip_preview": "プレビューを表示",
     "save_path": "パスを保存...",
     "load_path": "パスを読込...",
     "clear_all_keyframes": "全キーフレームを削除",

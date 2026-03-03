@@ -595,6 +595,7 @@
     "seq_follow": "相机跟随播放头",
     "seq_film_strip": "时间线上方缩略图条",
     "seq_preview_size": "画中画预览缩放",
+    "seq_pip_preview": "显示或隐藏画中画预览窗口",
     "seq_quality": "越低 = 质量越好，文件越大",
     "seq_export": "渲染为视频文件"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "跟随播放",
     "show_film_strip": "显示胶片条",
     "preview_size": "预览大小",
+    "show_pip_preview": "显示预览",
     "save_path": "保存路径...",
     "load_path": "加载路径...",
     "clear_all_keyframes": "清除所有关键帧",

@@ -3429,7 +3429,8 @@ namespace lfs::python {
                                  {0, 0}, {u1, v1}, t, {0, 0, 0, 0});
                 },
                 nb::arg("texture"), nb::arg("size"), nb::arg("tint") = nb::none(), "Draw a DynamicTexture with automatic UV scaling")
-            .def("image_tensor", [](PyUILayout& /*self*/, const std::string& label, PyTensor& tensor, std::tuple<float, float> size, nb::object tint) {
+            .def(
+                "image_tensor", [](PyUILayout& /*self*/, const std::string& label, PyTensor& tensor, std::tuple<float, float> size, nb::object tint) {
                     PyDynamicTexture* tex_ptr = nullptr;
                     {
                         std::lock_guard lock(g_dynamic_textures_mutex);
@@ -4317,6 +4318,7 @@ namespace lfs::python {
             .def_rw("snap_interval", &SequencerUIStateData::snap_interval, "Snap grid interval in frames")
             .def_rw("playback_speed", &SequencerUIStateData::playback_speed, "Playback speed multiplier")
             .def_rw("follow_playback", &SequencerUIStateData::follow_playback, "Whether viewport follows playback position")
+            .def_rw("show_pip_preview", &SequencerUIStateData::show_pip_preview, "Whether PiP preview window is shown")
             .def_rw("pip_preview_scale", &SequencerUIStateData::pip_preview_scale, "Picture-in-picture preview scale factor")
             .def_rw("show_film_strip", &SequencerUIStateData::show_film_strip, "Whether film strip thumbnails are shown above sequencer")
             .def_ro("selected_keyframe", &SequencerUIStateData::selected_keyframe);

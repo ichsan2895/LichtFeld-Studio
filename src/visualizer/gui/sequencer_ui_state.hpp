@@ -14,6 +14,7 @@ namespace lfs::vis::gui::panels {
         float snap_interval = 0.5f;
         float playback_speed = 1.0f;
         bool follow_playback = false;
+        bool show_pip_preview = true;
         float pip_preview_scale = 1.0f;
         bool show_film_strip = true;
         lfs::io::video::VideoPreset preset = lfs::io::video::VideoPreset::YOUTUBE_1080P;

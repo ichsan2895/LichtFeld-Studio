@@ -209,7 +209,9 @@ namespace lfs::vis {
             "#playhead-handle {{ background-color: {}; }}\n"
             "#current-time {{ color: {}; }}\n"
             "#duration {{ color: {}; }}\n"
-            "#easing-stripe {{ border-top: 1dp {}; }}\n",
+            "#easing-stripe {{ border-top: 1dp {}; }}\n"
+            "#transport-row {{ border-bottom: 1dp {}; }}\n"
+            "#time-display {{ border-left: 1dp {}; }}\n",
             surface_alpha, border, radius_str,
             text,
             bg_alpha, border_dim,
@@ -220,6 +222,8 @@ namespace lfs::vis {
             error,
             text,
             text_dim,
+            border_dim,
+            border_dim,
             border_dim);
     }
 
@@ -278,11 +282,10 @@ namespace lfs::vis {
 
         el_current_time_->SetInnerRML(formatTime(controller_.playhead()));
 
-        if (!controller_.timeline().empty()) {
-            el_duration_->SetInnerRML(" / " + formatTime(controller_.timeline().endTime()));
-        } else {
-            el_duration_->SetInnerRML("");
-        }
+        const float end = controller_.timeline().empty()
+                              ? DEFAULT_TIMELINE_DURATION
+                              : controller_.timeline().endTime();
+        el_duration_->SetInnerRML(" / " + formatTime(end));
     }
 
     void RmlSequencerPanel::rebuildKeyframes() {
@@ -391,6 +394,8 @@ namespace lfs::vis {
         std::string html;
         html.reserve(2048);
 
+        const float label_margin = 30.0f * cached_dp_ratio_;
+
         for (float t_val = 0.0f; t_val <= end_time; t_val += minor_interval) {
             const float x = (t_val / end_time) * timeline_width;
             if (x < 0.0f || x > timeline_width)
@@ -400,9 +405,12 @@ namespace lfs::vis {
 
             if (is_major) {
                 html += std::format(
-                    "<div class=\"ruler-tick major\" style=\"left: {:.1f}px;\" />"
-                    "<span class=\"ruler-label\" style=\"left: {:.1f}px;\">{}</span>",
-                    x, x + 4.0f * cached_dp_ratio_, formatTimeShort(t_val));
+                    "<div class=\"ruler-tick major\" style=\"left: {:.1f}px;\" />", x);
+                if (x + label_margin <= timeline_width) {
+                    html += std::format(
+                        "<span class=\"ruler-label\" style=\"left: {:.1f}px;\">{}</span>",
+                        x + 4.0f * cached_dp_ratio_, formatTimeShort(t_val));
+                }
             } else {
                 html += std::format(
                     "<div class=\"ruler-tick minor\" style=\"left: {:.1f}px;\" />",
@@ -457,8 +465,7 @@ namespace lfs::vis {
 
     float RmlSequencerPanel::timelineWidth() const {
         const float s = cached_dp_ratio_;
-        return cached_panel_width_ - 2.0f * INNER_PADDING * s -
-               TRANSPORT_WIDTH * s - TIME_DISPLAY_WIDTH * s;
+        return cached_panel_width_ - 2.0f * INNER_PADDING_H * s;
     }
 
     void RmlSequencerPanel::render(const float viewport_x, const float viewport_width,
@@ -534,13 +541,14 @@ namespace lfs::vis {
         fbo_.blitToScreen(panel_x, panel_y, panel_width, cached_height_,
                           input.screen_w, input.screen_h);
 
+        const float inner_pad_h = INNER_PADDING_H * dp;
         const float inner_pad = INNER_PADDING * dp;
-        const float transport_w = TRANSPORT_WIDTH * dp;
-        const float content_height = cached_height_ - 2.0f * inner_pad;
+        const float transport_row_h = TRANSPORT_ROW_HEIGHT * dp;
+        const float content_height = cached_height_ - 2.0f * inner_pad - transport_row_h;
         const float tl_width = timelineWidth();
 
-        const Vec2 timeline_pos = {panel_x + inner_pad + transport_w,
-                                   panel_y + inner_pad};
+        const Vec2 timeline_pos = {panel_x + inner_pad_h,
+                                   panel_y + inner_pad + transport_row_h};
 
         cached_playhead_screen_x_ = timeToX(controller_.playhead(), timeline_pos.x, tl_width);
         playhead_in_range_ = cached_playhead_screen_x_ >= timeline_pos.x &&

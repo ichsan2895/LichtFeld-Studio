@@ -595,6 +595,7 @@
     "seq_follow": "Kamera podaza za glowica",
     "seq_film_strip": "Pasek miniatur nad osia czasu",
     "seq_preview_size": "Skala podgladu PiP",
+    "seq_pip_preview": "Pokaz lub ukryj okno podgladu PiP",
     "seq_quality": "Nizszy = lepsza jakosc, wiekszy plik",
     "seq_export": "Renderuj do pliku wideo"
   },
@@ -1041,6 +1042,7 @@
     "follow_playback": "Sledz odtwarzanie",
     "show_film_strip": "Pokaz tasmowa miniature",
     "preview_size": "Rozmiar podgladu",
+    "show_pip_preview": "Pokaz podglad",
     "save_path": "Zapisz sciezke...",
     "load_path": "Wczytaj sciezke...",
     "clear_all_keyframes": "Usun wszystkie klatki kluczowe",

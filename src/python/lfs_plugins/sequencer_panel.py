@@ -106,6 +106,9 @@ class SequencerSettingsPanel(RmlPanel):
         model.bind("show_film_strip",
                     lambda: _seq_bool_getter("show_film_strip"),
                     lambda v: _seq_bool_setter("show_film_strip", v))
+        model.bind("show_pip_preview",
+                    lambda: _seq_bool_getter("show_pip_preview"),
+                    lambda v: _seq_bool_setter("show_pip_preview", v))
         model.bind("pip_preview_scale",
                     lambda: _seq_float_getter("pip_preview_scale", 1.0),
                     lambda v: _seq_float_setter("pip_preview_scale", v))
@@ -157,6 +160,7 @@ class SequencerSettingsPanel(RmlPanel):
             "label_interval": "sequencer_settings.interval",
             "label_follow_playback": "sequencer_settings.follow_playback",
             "label_show_film_strip": "sequencer_settings.show_film_strip",
+            "label_show_pip_preview": "sequencer_settings.show_pip_preview",
             "label_preview_size": "sequencer_settings.preview_size",
             "label_save_path": "sequencer_settings.save_path",
             "label_load_path": "sequencer_settings.load_path",
