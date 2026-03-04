@@ -67,7 +67,7 @@ class EmptyStateOverlay(Panel):
             dp = layout.get_dpi_scale()
             seq_state = lf.ui.get_sequencer_state()
             film_strip_h = 56.0 if (seq_state and seq_state.show_film_strip) else 0.0
-            seq_height = 126.0 * dp + film_strip_h
+            seq_height = 162.0 * dp + film_strip_h
             bottom_padding = max(ZONE_PADDING, seq_height + 8.0)
         zone_max_y = vp_y + vp_h - bottom_padding
 
