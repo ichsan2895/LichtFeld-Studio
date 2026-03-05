@@ -141,7 +141,8 @@ namespace lfs::vis {
 
         state::DatasetLoadCompleted::when([this](const auto& e) {
             if (e.success) {
-                handleFocusSelection();
+                viewport_.camera.resetToHome();
+                publishCameraMove();
             }
         });
 
