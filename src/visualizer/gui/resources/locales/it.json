@@ -1037,6 +1037,16 @@
     "line_width": "Line Width",
     "instructions": "Enter: Commit selection | Ctrl+C: Copy contents"
   },
+  "file_association": {
+    "title": "Imposta come applicazione predefinita",
+    "message": "Vuoi impostare LichtFeld Studio come applicazione predefinita per i file splat (.ply, .sog, .spz)?",
+    "yes": "Sì",
+    "not_now": "Non ora",
+    "dont_ask": "Non chiedere più",
+    "success": "Associazioni file registrate con successo.",
+    "menu_register": "Imposta come applicazione predefinita...",
+    "menu_unregister": "Rimuovi come applicazione predefinita..."
+  },
   "context_menu": {
     "snap_interval": "Intervallo griglia",
     "preview_scale": "Scala anteprima",

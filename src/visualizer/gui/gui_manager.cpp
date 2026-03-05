@@ -16,6 +16,7 @@
 #include "core/logger.hpp"
 #include "core/path_utils.hpp"
 #include "gui/editor/python_editor.hpp"
+#include "gui/layout_state.hpp"
 #include "gui/native_panels.hpp"
 #include "gui/panel_registry.hpp"
 #include "gui/panels/mesh2splat_panel.hpp"
@@ -23,6 +24,7 @@
 #include "gui/rmlui/rml_panel_host.hpp"
 #include "gui/string_keys.hpp"
 #include "gui/ui_widgets.hpp"
+#include "gui/utils/file_association.hpp"
 #include "gui/utils/windows_utils.hpp"
 #include "io/video_frame_extractor.hpp"
 #include <implot.h>
@@ -178,6 +180,49 @@ namespace lfs::vis::gui {
         if (!info.query_failed && !info.supported) {
             pending_cuda_warning_ = info;
         }
+    }
+
+    void GuiManager::promptFileAssociation() {
+#ifdef _WIN32
+        if (file_association_checked_)
+            return;
+        file_association_checked_ = true;
+
+        LayoutState state;
+        state.load();
+
+        if (!state.file_association.empty())
+            return;
+        if (areFileAssociationsRegistered())
+            return;
+
+        using namespace lichtfeld::Strings;
+        lfs::core::ModalRequest req;
+        req.title = LOC(FileAssociation::TITLE);
+        req.body_rml = "<p>" + std::string(LOC(FileAssociation::MESSAGE)) + "</p>";
+        req.style = lfs::core::ModalStyle::Info;
+        req.buttons = {
+            {LOC(FileAssociation::YES), "primary"},
+            {LOC(FileAssociation::NOT_NOW), "secondary"},
+            {LOC(FileAssociation::DONT_ASK), "secondary"},
+        };
+        req.on_result = [](const lfs::core::ModalResult& result) {
+            LayoutState ls;
+            ls.load();
+
+            if (result.button_label == LOC(FileAssociation::YES)) {
+                registerFileAssociations();
+                ls.file_association = "registered";
+            } else if (result.button_label == LOC(FileAssociation::DONT_ASK)) {
+                ls.file_association = "declined";
+            } else {
+                return;
+            }
+            ls.save();
+        };
+
+        rml_modal_overlay_->enqueue(std::move(req));
+#endif
     }
 
     GuiManager::~GuiManager() = default;
@@ -741,6 +786,8 @@ namespace lfs::vis::gui {
                 .emit();
             pending_cuda_warning_.reset();
         }
+
+        promptFileAssociation();
 
         if (pending_ui_scale_ > 0.0f) {
             applyUiScale(pending_ui_scale_);

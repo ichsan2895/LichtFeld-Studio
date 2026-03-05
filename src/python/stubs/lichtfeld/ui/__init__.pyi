@@ -2149,6 +2149,21 @@ def toggle_system_console() -> None:
 def is_windows_platform() -> bool:
     """Returns true on Windows"""
 
+def register_file_associations() -> bool:
+    """
+    Register LichtFeld Studio as default handler for .ply, .sog, .spz files (Windows only)
+    """
+
+def unregister_file_associations() -> bool:
+    """
+    Remove LichtFeld Studio file associations for .ply, .sog, .spz (Windows only)
+    """
+
+def are_file_associations_registered() -> bool:
+    """
+    Check if LichtFeld Studio is the default handler for .ply, .sog, .spz (Windows only)
+    """
+
 def get_pivot_mode() -> int:
     """Get pivot mode (0=Origin, 1=Bounds)"""
 

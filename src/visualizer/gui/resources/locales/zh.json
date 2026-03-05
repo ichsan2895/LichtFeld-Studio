@@ -1037,6 +1037,16 @@
     "line_width": "Line Width",
     "instructions": "Enter: Commit selection | Ctrl+C: Copy contents"
   },
+  "file_association": {
+    "title": "设为默认应用程序",
+    "message": "是否将 LichtFeld Studio 设为 Splat 文件（.ply、.sog、.spz）的默认应用程序？",
+    "yes": "是",
+    "not_now": "暂时不",
+    "dont_ask": "不再询问",
+    "success": "文件关联注册成功。",
+    "menu_register": "设为默认应用程序...",
+    "menu_unregister": "取消设为默认应用程序..."
+  },
   "context_menu": {
     "snap_interval": "吸附间隔",
     "preview_scale": "预览缩放",

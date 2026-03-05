@@ -14,6 +14,7 @@
 #include "gui/global_context_menu.hpp"
 #include "gui/rml_menu_bar.hpp"
 #include "gui/ui_widgets.hpp"
+#include "gui/utils/file_association.hpp"
 #include "gui/utils/windows_utils.hpp"
 #include "internal/resource_paths.hpp"
 #include "io/exporter.hpp"
@@ -3429,7 +3430,8 @@ namespace lfs::python {
                                  {0, 0}, {u1, v1}, t, {0, 0, 0, 0});
                 },
                 nb::arg("texture"), nb::arg("size"), nb::arg("tint") = nb::none(), "Draw a DynamicTexture with automatic UV scaling")
-            .def("image_tensor", [](PyUILayout& /*self*/, const std::string& label, PyTensor& tensor, std::tuple<float, float> size, nb::object tint) {
+            .def(
+                "image_tensor", [](PyUILayout& /*self*/, const std::string& label, PyTensor& tensor, std::tuple<float, float> size, nb::object tint) {
                     PyDynamicTexture* tex_ptr = nullptr;
                     {
                         std::lock_guard lock(g_dynamic_textures_mutex);
@@ -4420,6 +4422,24 @@ namespace lfs::python {
 #endif
             },
             "Returns true on Windows");
+
+        m.def(
+            "register_file_associations", []() -> bool {
+                return lfs::vis::gui::registerFileAssociations();
+            },
+            "Register LichtFeld Studio as default handler for .ply, .sog, .spz files (Windows only)");
+
+        m.def(
+            "unregister_file_associations", []() -> bool {
+                return lfs::vis::gui::unregisterFileAssociations();
+            },
+            "Remove LichtFeld Studio file associations for .ply, .sog, .spz (Windows only)");
+
+        m.def(
+            "are_file_associations_registered", []() -> bool {
+                return lfs::vis::gui::areFileAssociationsRegistered();
+            },
+            "Check if LichtFeld Studio is the default handler for .ply, .sog, .spz (Windows only)");
 
         m.def("get_pivot_mode", &get_pivot_mode, "Get pivot mode (0=Origin, 1=Bounds)");
 

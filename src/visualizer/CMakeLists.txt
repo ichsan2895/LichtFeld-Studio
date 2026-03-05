@@ -145,6 +145,7 @@ add_library(lfs_visualizer ${LFS_VIS_LIB_TYPE}
         gui/panels/menu_bar.hpp
         gui/utils/windows_utils.cpp
         gui/utils/drag_drop_native.cpp
+        gui/utils/file_association.cpp
 
         # RmlUI integration
         gui/rmlui/rmlui_system_interface.cpp
@@ -369,6 +370,7 @@ if (WIN32)
     )
     target_link_libraries(lfs_visualizer PRIVATE
             Ole32       # OLE drag-drop (IDropTarget)
+            Shell32     # SHChangeNotify (file association)
             dxgi        # DXGI per-process VRAM query
     )
 elseif (UNIX AND NOT APPLE)

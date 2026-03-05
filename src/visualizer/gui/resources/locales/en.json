@@ -1037,6 +1037,16 @@
     "playback_time": "Playback {:.2f}s",
     "keyframe_preview": "Keyframe {} Preview"
   },
+  "file_association": {
+    "title": "Set as Default Application",
+    "message": "Would you like to set LichtFeld Studio as the default application for splat files (.ply, .sog, .spz)?",
+    "yes": "Yes",
+    "not_now": "Not Now",
+    "dont_ask": "Don't Ask Again",
+    "success": "File associations registered successfully.",
+    "menu_register": "Set as Default Application...",
+    "menu_unregister": "Remove as Default Application..."
+  },
   "context_menu": {
     "snap_interval": "Snap Interval",
     "preview_scale": "Preview Scale",

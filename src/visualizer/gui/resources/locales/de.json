@@ -1037,6 +1037,16 @@
     "line_width": "Line Width",
     "instructions": "Enter: Commit selection | Ctrl+C: Copy contents"
   },
+  "file_association": {
+    "title": "Als Standardanwendung festlegen",
+    "message": "Möchten Sie LichtFeld Studio als Standardanwendung für Splat-Dateien (.ply, .sog, .spz) festlegen?",
+    "yes": "Ja",
+    "not_now": "Nicht jetzt",
+    "dont_ask": "Nicht mehr fragen",
+    "success": "Dateizuordnungen erfolgreich registriert.",
+    "menu_register": "Als Standardanwendung festlegen...",
+    "menu_unregister": "Als Standardanwendung entfernen..."
+  },
   "context_menu": {
     "snap_interval": "Rasterintervall",
     "preview_scale": "Vorschaugröße",

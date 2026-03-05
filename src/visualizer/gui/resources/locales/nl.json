@@ -1037,6 +1037,16 @@
     "line_width": "Line Width",
     "instructions": "Enter: Commit selection | Ctrl+C: Copy contents"
   },
+  "file_association": {
+    "title": "Instellen als standaardtoepassing",
+    "message": "Wilt u LichtFeld Studio instellen als de standaardtoepassing voor splat-bestanden (.ply, .sog, .spz)?",
+    "yes": "Ja",
+    "not_now": "Niet nu",
+    "dont_ask": "Niet meer vragen",
+    "success": "Bestandskoppelingen succesvol geregistreerd.",
+    "menu_register": "Instellen als standaardtoepassing...",
+    "menu_unregister": "Verwijderen als standaardtoepassing..."
+  },
   "context_menu": {
     "snap_interval": "Rasterinterval",
     "preview_scale": "Voorbeeldgrootte",
