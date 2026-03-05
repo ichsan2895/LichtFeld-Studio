@@ -211,7 +211,7 @@ progress fill {
     left: 0;
     right: 0;
     text-align: center;
-    font-size: 8dp;
+    font-size: 10dp;
     color: #cdd6f4;
 }
 
@@ -249,7 +249,7 @@ progress fill {
     display: inline-block;
     width: 45dp;
     text-align: right;
-    font-size: 9dp;
+    font-size: 11dp;
     color: #a6adc8;
     margin-left: 4dp;
     flex-shrink: 0;
@@ -276,7 +276,7 @@ progress fill {
 .section-arrow {
     display: inline-block;
     width: 14dp;
-    font-size: 9dp;
+    font-size: 11dp;
     color: #cdd6f4;
     margin-right: 4dp;
     text-align: center;
@@ -302,7 +302,7 @@ progress fill {
 .color-comp {
     display: inline-block;
     width: 44dp;
-    font-size: 9dp;
+    font-size: 11dp;
     color: #a6adc8;
     background-color: #313244;
     border-width: 1dp;
@@ -315,7 +315,7 @@ progress fill {
 
 .color-hex {
     width: 70dp;
-    font-size: 9dp;
+    font-size: 11dp;
     padding: 2dp 4dp;
     color: #cdd6f4;
     background-color: #313244;
@@ -372,14 +372,14 @@ progress fill {
 
 .context-menu-item.submenu-item {
     padding-left: 20dp;
-    font-size: 9dp;
+    font-size: 11dp;
 }
 
 .context-menu-label {
     display: block;
     padding: 4dp 12dp;
     color: #a6adc8;
-    font-size: 9dp;
+    font-size: 11dp;
 }
 
 .context-menu-separator {
@@ -402,7 +402,7 @@ progress fill {
 }
 
 .section-label {
-    font-size: 9dp;
+    font-size: 11dp;
     margin-bottom: 4dp;
     margin-top: 6dp;
 }
@@ -582,7 +582,7 @@ progress fill {
 
 .text-disabled {
     color: #a6adc8;
-    font-size: 9dp;
+    font-size: 11dp;
     padding: 0 0 0 2dp;
 }
 

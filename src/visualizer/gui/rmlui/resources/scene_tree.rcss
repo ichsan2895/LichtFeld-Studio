@@ -98,7 +98,7 @@ body {
 .expand-toggle {
     display: inline;
     width: 12dp;
-    font-size: 8dp;
+    font-size: 10dp;
     color: #a6adc8;
     cursor: pointer;
     text-align: center;
@@ -185,7 +185,7 @@ body {
 .node-count {
     display: inline;
     color: #6c7086;
-    font-size: 9dp;
+    font-size: 11dp;
     margin-left: 6dp;
 }
 

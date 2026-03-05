@@ -50,10 +50,10 @@
 
 .footer-text {
     color: #a6adc8;
-    font-size: 9dp;
+    font-size: 11dp;
 }
 
 .footer-sep {
     color: #585b70;
-    font-size: 9dp;
+    font-size: 11dp;
 }

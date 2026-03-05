@@ -91,7 +91,7 @@ body {
 
 #kf-edit-delta {
     display: block;
-    font-size: 9dp;
+    font-size: 11dp;
     margin-bottom: 4dp;
 }
 

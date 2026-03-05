@@ -123,12 +123,12 @@ body {
 }
 
 .transport-label {
-    font-size: 8dp;
+    font-size: 10dp;
     white-space: nowrap;
 }
 
 .transport-info {
-    font-size: 8dp;
+    font-size: 10dp;
     opacity: 0.6;
     flex-shrink: 0;
 }
@@ -164,12 +164,12 @@ body {
 }
 
 .speed-val {
-    font-size: 9dp;
+    font-size: 11dp;
     font-weight: bold;
 }
 
 .speed-text {
-    font-size: 8dp;
+    font-size: 10dp;
     opacity: 0.5;
     margin-left: 3dp;
 }
@@ -250,7 +250,7 @@ body {
     display: block;
     position: absolute;
     top: 0;
-    font-size: 9dp;
+    font-size: 11dp;
     color: rgba(200, 210, 230, 220);
 }
 
@@ -279,7 +279,7 @@ body {
     left: 0;
     width: 100%;
     text-align: center;
-    font-size: 8dp;
+    font-size: 10dp;
 }
 
 #keyframes {

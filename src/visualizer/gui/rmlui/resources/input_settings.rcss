@@ -16,7 +16,7 @@
 }
 
 .is-hint {
-    font-size: 9dp;
+    font-size: 11dp;
     color: #a6adc8;
     margin-bottom: 4dp;
 }
@@ -48,7 +48,7 @@
 
 .is-binding-section {
     display: block;
-    font-size: 9dp;
+    font-size: 11dp;
     font-weight: bold;
     color: #89b4fa;
     padding: 3dp 4dp;
@@ -84,7 +84,7 @@
 .is-rebind-btn {
     flex-shrink: 0;
     min-width: 60dp;
-    font-size: 9dp;
+    font-size: 11dp;
     padding: 1dp 6dp;
 }
 

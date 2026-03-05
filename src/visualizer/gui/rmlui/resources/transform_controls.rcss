@@ -21,13 +21,13 @@ body {
 }
 
 .info-sublabel {
-    font-size: 9dp;
+    font-size: 11dp;
     color: #a6adc8;
     margin-left: 8dp;
 }
 
 .axis-label {
-    font-size: 9dp;
+    font-size: 11dp;
     color: #a6adc8;
     padding: 2dp 6dp 0;
 }

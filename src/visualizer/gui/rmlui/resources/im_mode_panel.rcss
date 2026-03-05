@@ -107,7 +107,7 @@
     border-color: rgba(88, 91, 112, 128);
     border-radius: 3dp;
     padding: 4dp 8dp;
-    font-size: 9dp;
+    font-size: 11dp;
     max-width: 300dp;
     pointer-events: none;
 }
