@@ -150,6 +150,19 @@ if(NVIDIA_SMI)
     )
     string(REGEX REPLACE "\n.*" "" DETECTED_COMPUTE_CAP "${DETECTED_COMPUTE_CAP}")
 
+    execute_process(
+            COMMAND ${NVIDIA_SMI} --query-gpu=driver_version --format=csv,noheader
+            OUTPUT_VARIABLE NVIDIA_DRIVER_VERSION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    string(REGEX REPLACE "\n.*" "" NVIDIA_DRIVER_VERSION "${NVIDIA_DRIVER_VERSION}")
+    message(STATUS "Detected NVIDIA driver: ${NVIDIA_DRIVER_VERSION}")
+    if(NVIDIA_DRIVER_VERSION VERSION_LESS "570")
+        message(FATAL_ERROR "NVIDIA driver ${NVIDIA_DRIVER_VERSION} is too old. "
+            "CUDA Toolkit 12.8 requires driver >= 570. "
+            "Please update: https://www.nvidia.com/drivers")
+    endif()
+
     message(STATUS "Detected GPU compute capability: ${DETECTED_COMPUTE_CAP}")
     if(CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 13.1)
         string(REPLACE "." "" LichtFeld-Studio_CUDA_ARCH "${DETECTED_COMPUTE_CAP}")
