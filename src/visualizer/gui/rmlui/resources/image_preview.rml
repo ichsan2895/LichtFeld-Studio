@@ -6,10 +6,19 @@
 <body template="floating-window" data-model="image_preview">
 
   <div id="main-area">
-    <div id="filmstrip"></div>
+    <div id="filmstrip">
+      <div class="thumb-item"
+           data-for="thumb : thumbs"
+           data-class-selected="thumb.selected"
+           data-attr-data-index="thumb.index"
+           data-style-decorator="thumb.decorator">
+        <span class="thumb-index">{{ thumb.label }}</span>
+      </div>
+    </div>
     <div id="image-container">
       <div id="image-viewport">
-        <div id="main-image"></div>
+        <div id="main-image-a" class="image-layer"></div>
+        <div id="main-image-b" class="image-layer hidden"></div>
         <div id="mask-overlay"></div>
         <span id="no-image-text"></span>
       </div>

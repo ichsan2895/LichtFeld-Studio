@@ -113,6 +113,8 @@ namespace lfs::vis::gui {
         bool error_disabled = false;
         float initial_width = 0;
         float initial_height = 0;
+        float original_width = 0;
+        float original_height = 0;
         float float_x = NAN;
         float float_y = NAN;
         bool float_dragging = false;

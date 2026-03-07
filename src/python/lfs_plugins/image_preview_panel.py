@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Image preview panel using RmlUI floating window."""
 
+import time
 from math import gcd
 from pathlib import Path
 from typing import Optional
@@ -12,6 +13,8 @@ from .types import RmlPanel
 ZOOM_MIN = 0.1
 ZOOM_MAX = 10.0
 PRECISE_SCROLL_STEP = 32.0
+CROSSFADE_DURATION = 0.2
+SCROLL_DURATION = 0.15
 
 # RmlUI key identifiers (Rml::Input::KeyIdentifier)
 KI_SPACE = 1
@@ -76,8 +79,15 @@ class ImagePreviewPanel(RmlPanel):
 
         self._doc = None
         self._dirty = True
-        self._filmstrip_needs_rebuild = True
-        self._prev_index = -1
+        self._prev_image_index = -1
+
+        self._active_layer = "a"
+        self._crossfade_pending = False
+        self._crossfade_start = 0.0
+
+        self._scroll_target = None
+        self._scroll_origin = 0.0
+        self._scroll_start_time = 0.0
 
         self._image_info_cache: dict[str, tuple[int, int, int]] = {}
 
@@ -93,6 +103,7 @@ class ImagePreviewPanel(RmlPanel):
             return
 
         model.bind_func("panel_label", lambda: self._get_title())
+        model.bind_record_list("thumbs")
         self._handle = model.get_handle()
 
     def on_load(self, doc):
@@ -116,10 +127,14 @@ class ImagePreviewPanel(RmlPanel):
         if cb_mask:
             cb_mask.add_event_listener("change", self._on_mask_checkbox_change)
 
-        for eid in ("filmstrip", "sidebar"):
-            el = doc.get_element_by_id(eid)
-            if el:
-                el.add_event_listener("mousescroll", self._on_precise_scroll)
+        filmstrip = doc.get_element_by_id("filmstrip")
+        if filmstrip:
+            filmstrip.add_event_listener("click", self._on_filmstrip_click)
+            filmstrip.add_event_listener("mousescroll", self._on_precise_scroll)
+
+        sidebar = doc.get_element_by_id("sidebar")
+        if sidebar:
+            sidebar.add_event_listener("mousescroll", self._on_precise_scroll)
 
         img_container = doc.get_element_by_id("image-container")
         if img_container:
@@ -142,11 +157,24 @@ class ImagePreviewPanel(RmlPanel):
     def on_update(self, doc):
         if not self._fit_to_window and self._image_paths and self._hover_image:
             lf.ui.set_mouse_cursor_hand()
-        if not self._dirty:
-            return False
-        self._dirty = False
-        self._refresh_ui(doc)
-        return True
+
+        needs_redraw = False
+
+        if self._crossfade_pending:
+            if time.monotonic() - self._crossfade_start >= CROSSFADE_DURATION:
+                self._finalize_crossfade(doc)
+            needs_redraw = True
+
+        if self._scroll_target is not None:
+            self._tick_scroll(doc)
+            needs_redraw = True
+
+        if self._dirty:
+            self._dirty = False
+            self._refresh_ui(doc)
+            return True
+
+        return needs_redraw
 
     def open(self, image_paths: list[Path], mask_paths: list[Optional[Path]], start_index: int):
         if not image_paths:
@@ -157,8 +185,9 @@ class ImagePreviewPanel(RmlPanel):
         self._current_index = min(start_index, len(image_paths) - 1)
         self._reset_view()
         self._dirty = True
-        self._filmstrip_needs_rebuild = True
-        self._prev_index = -1
+        self._prev_image_index = -1
+        self._crossfade_pending = False
+        self._scroll_target = None
 
     def _reset_pan(self):
         self._pan_x = 0.0
@@ -246,6 +275,15 @@ class ImagePreviewPanel(RmlPanel):
             return f"{w / h:.2f}:1"
         return f"{rw}:{rh}"
 
+    def _on_filmstrip_click(self, event):
+        el = event.target()
+        while el:
+            idx_str = el.get_attribute("data-index", "")
+            if idx_str:
+                self._go_to_image(int(idx_str))
+                return
+            el = el.parent()
+
     def _on_fit_checkbox_change(self, _event):
         cb = self._doc.get_element_by_id("cb-fit") if self._doc else None
         if cb:
@@ -327,6 +365,12 @@ class ImagePreviewPanel(RmlPanel):
     def _on_layout_resize(self, _event):
         self._dirty = True
 
+    def _get_active_layer_id(self):
+        return "main-image-a" if self._active_layer == "a" else "main-image-b"
+
+    def _get_inactive_layer_id(self):
+        return "main-image-b" if self._active_layer == "a" else "main-image-a"
+
     def _apply_zoom(self, img_el, path: Path):
         viewport = self._doc.get_element_by_id("image-viewport") if self._doc else None
         w, h, _ = self._get_image_info(path)
@@ -374,30 +418,64 @@ class ImagePreviewPanel(RmlPanel):
             self._handle.dirty("panel_label")
 
     def _update_main_image(self, doc, has_images: bool):
-        main_img = doc.get_element_by_id("main-image")
+        layer_a = doc.get_element_by_id("main-image-a")
+        layer_b = doc.get_element_by_id("main-image-b")
         mask_img = doc.get_element_by_id("mask-overlay")
         no_text = doc.get_element_by_id("no-image-text")
 
         if not has_images:
-            if main_img:
-                main_img.set_attribute("class", "hidden")
-                main_img.set_property("decorator", "none")
+            for layer in (layer_a, layer_b):
+                if layer:
+                    layer.set_attribute("class", "image-layer hidden")
+                    layer.set_property("decorator", "none")
             if mask_img:
                 mask_img.set_attribute("class", "")
                 mask_img.set_property("decorator", "none")
             if no_text:
                 no_text.set_attribute("class", "")
                 no_text.set_inner_rml(_xml_escape(lf.ui.tr("image_preview.no_images_loaded")))
+            self._prev_image_index = -1
+            self._crossfade_pending = False
             return
 
         path = self._image_paths[self._current_index]
-        if main_img:
-            main_img.set_attribute("class", "")
-            main_img.set_property("decorator", f"image({path})")
-            self._apply_zoom(main_img, path)
+        active_layer = doc.get_element_by_id(self._get_active_layer_id())
+        inactive_layer = doc.get_element_by_id(self._get_inactive_layer_id())
+
         if no_text:
             no_text.set_attribute("class", "hidden")
 
+        if self._prev_image_index == -1:
+            if active_layer:
+                active_layer.set_property("decorator", f"image({path})")
+                active_layer.set_attribute("class", "image-layer")
+                self._apply_zoom(active_layer, path)
+            if inactive_layer:
+                inactive_layer.set_attribute("class", "image-layer hidden")
+                inactive_layer.set_property("decorator", "none")
+            self._prev_image_index = self._current_index
+        elif self._prev_image_index != self._current_index:
+            if self._crossfade_pending and inactive_layer:
+                inactive_layer.set_attribute("class", "image-layer hidden")
+                inactive_layer.set_property("decorator", "none")
+
+            if inactive_layer:
+                inactive_layer.set_property("decorator", f"image({path})")
+                inactive_layer.set_attribute("class", "image-layer")
+                self._apply_zoom(inactive_layer, path)
+            if active_layer:
+                active_layer.set_attribute("class", "image-layer fading-out")
+
+            self._active_layer = "b" if self._active_layer == "a" else "a"
+            self._crossfade_pending = True
+            self._crossfade_start = time.monotonic()
+            self._prev_image_index = self._current_index
+        else:
+            if active_layer:
+                active_layer.set_property("decorator", f"image({path})")
+                self._apply_zoom(active_layer, path)
+
+        active_layer = doc.get_element_by_id(self._get_active_layer_id())
         show_mask = self._show_overlay and self._has_valid_overlay()
         if mask_img:
             if show_mask:
@@ -408,6 +486,14 @@ class ImagePreviewPanel(RmlPanel):
             else:
                 mask_img.set_attribute("class", "")
                 mask_img.set_property("decorator", "none")
+
+    def _finalize_crossfade(self, doc):
+        outgoing_id = self._get_inactive_layer_id()
+        outgoing = doc.get_element_by_id(outgoing_id)
+        if outgoing:
+            outgoing.set_attribute("class", "image-layer hidden")
+            outgoing.set_property("decorator", "none")
+        self._crossfade_pending = False
 
     def _update_filmstrip(self, doc, has_images: bool):
         filmstrip = doc.get_element_by_id("filmstrip")
@@ -420,40 +506,52 @@ class ImagePreviewPanel(RmlPanel):
         filmstrip.set_attribute("class", "")
 
         if not has_images:
-            filmstrip.set_inner_rml("")
-            self._filmstrip_needs_rebuild = True
+            self._handle.update_record_list("thumbs", [])
             return
 
-        if self._filmstrip_needs_rebuild:
-            self._filmstrip_needs_rebuild = False
-            parts = []
-            for i in range(len(self._image_paths)):
-                cls = "thumb-item selected" if i == self._current_index else "thumb-item"
-                idx_label = f"{i + 1:02d}"
-                parts.append(
-                    f'<div class="{cls}" id="thumb-{i}">'
-                    f'<span class="thumb-index">{idx_label}</span>'
-                    f'</div>'
-                )
-            filmstrip.set_inner_rml("\n".join(parts))
+        records = []
+        for i, path in enumerate(self._image_paths):
+            records.append({
+                "index": i,
+                "label": f"{i + 1:02d}",
+                "selected": i == self._current_index,
+                "decorator": f"image({path})",
+            })
+        self._handle.update_record_list("thumbs", records)
 
-            for i, path in enumerate(self._image_paths):
-                el = doc.get_element_by_id(f"thumb-{i}")
-                if el:
-                    el.set_property("decorator", f"image({path})")
-                    el.add_event_listener("click", lambda _ev, idx=i: self._go_to_image(idx))
-            self._scroll_filmstrip(filmstrip, self._current_index)
-            self._prev_index = self._current_index
-        elif self._prev_index != self._current_index:
-            if self._prev_index >= 0:
-                old_el = doc.get_element_by_id(f"thumb-{self._prev_index}")
-                if old_el:
-                    old_el.set_attribute("class", "thumb-item")
-            new_el = doc.get_element_by_id(f"thumb-{self._current_index}")
-            if new_el:
-                new_el.set_attribute("class", "thumb-item selected")
-            self._scroll_filmstrip(filmstrip, self._current_index)
-            self._prev_index = self._current_index
+        self._scroll_filmstrip_smooth(filmstrip, self._current_index)
+
+    def _scroll_filmstrip_smooth(self, filmstrip, index: int):
+        children = filmstrip.children()
+        if index < 0 or index >= len(children):
+            return
+        el = children[index]
+        item_top = el.offset_top
+        item_bot = item_top + el.offset_height
+        view_h = filmstrip.client_height
+        if view_h <= 0:
+            return
+        st = filmstrip.scroll_top
+        if item_top < st:
+            target = item_top
+        elif item_bot > st + view_h:
+            target = item_bot - view_h
+        else:
+            return
+        self._scroll_target = target
+        self._scroll_origin = st
+        self._scroll_start_time = time.monotonic()
+
+    def _tick_scroll(self, doc):
+        filmstrip = doc.get_element_by_id("filmstrip")
+        if not filmstrip:
+            self._scroll_target = None
+            return
+        t = min(1.0, (time.monotonic() - self._scroll_start_time) / SCROLL_DURATION)
+        t = t * (2.0 - t)
+        filmstrip.scroll_top = self._scroll_origin + (self._scroll_target - self._scroll_origin) * t
+        if t >= 1.0:
+            self._scroll_target = None
 
     def _update_nav_arrows(self, doc, has_images: bool):
         prev_el = doc.get_element_by_id("nav-prev")
@@ -602,8 +700,6 @@ class ImagePreviewPanel(RmlPanel):
             event.stop_propagation()
         elif key == KI_T:
             self._show_filmstrip = not self._show_filmstrip
-            if self._show_filmstrip:
-                self._filmstrip_needs_rebuild = True
             self._dirty = True
             event.stop_propagation()
         elif key == KI_M:
@@ -641,23 +737,6 @@ class ImagePreviewPanel(RmlPanel):
             event.stop_propagation()
 
     # -- Helpers --
-
-    def _scroll_filmstrip(self, filmstrip, index: int):
-        if not self._doc:
-            return
-        el = self._doc.get_element_by_id(f"thumb-{index}")
-        if not el:
-            return
-        item_top = el.offset_top
-        item_bot = item_top + el.offset_height
-        view_h = filmstrip.client_height
-        if view_h <= 0:
-            return
-        st = filmstrip.scroll_top
-        if item_top < st:
-            filmstrip.scroll_top = item_top
-        elif item_bot > st + view_h:
-            filmstrip.scroll_top = item_bot - view_h
 
     def _get_zoom_display(self) -> str:
         if self._fit_to_window:

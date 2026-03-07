@@ -53,6 +53,7 @@
     opacity: 0.5;
     position: relative;
     overflow: hidden;
+    transition: opacity 0.12s quadratic-out;
 }
 
 .thumb-item:hover {
@@ -92,13 +93,19 @@
     clip: always;
 }
 
-#main-image {
+.image-layer {
     position: absolute;
     display: block;
     decorator: none;
+    opacity: 1;
+    transition: opacity 0.2s quadratic-out;
 }
 
-#main-image.hidden {
+.image-layer.fading-out {
+    opacity: 0;
+}
+
+.image-layer.hidden {
     display: none;
 }
 

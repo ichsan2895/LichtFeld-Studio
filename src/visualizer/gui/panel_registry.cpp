@@ -25,6 +25,9 @@ namespace lfs::vis::gui {
         assert(info.panel);
         assert(!info.idname.empty());
 
+        info.original_width = info.initial_width;
+        info.original_height = info.initial_height;
+
         if (disabled_overrides_.contains(info.idname))
             info.enabled = false;
 
@@ -144,11 +147,14 @@ namespace lfs::vis::gui {
                     } else if (snap.panel->supportsDirectDraw()) {
                         float w = snap.initial_width > 0 ? snap.initial_width : 560.0f;
                         const auto* vp = ImGui::GetMainViewport();
+                        const float max_h = snap.initial_height > 0
+                                                ? std::min(snap.initial_height, vp->WorkSize.y)
+                                                : vp->WorkSize.y;
                         float drawn_h = snap.panel->getDirectDrawHeight();
                         if (drawn_h <= 0.0f) {
                             float prev_h = -1.0f;
                             for (int pass = 0; pass < 3; ++pass) {
-                                snap.panel->preloadDirect(w, vp->WorkSize.y, ctx);
+                                snap.panel->preloadDirect(w, max_h, ctx);
                                 drawn_h = snap.panel->getDirectDrawHeight();
 
                                 const bool stable_height =
@@ -169,7 +175,7 @@ namespace lfs::vis::gui {
                                 h = panels_[snap.index].float_user_height;
                                 has_user_height = true;
                             } else if (drawn_h > 0)
-                                h = std::min(drawn_h, vp->WorkSize.y);
+                                h = std::min(drawn_h, max_h);
                             else if (snap.initial_height > 0)
                                 h = snap.initial_height;
                             else
@@ -647,6 +653,9 @@ namespace lfs::vis::gui {
                 if (enabled && p.space == PanelSpace::Floating) {
                     p.float_x = NAN;
                     p.float_y = NAN;
+                    p.initial_width = p.original_width;
+                    p.initial_height = p.original_height;
+                    p.float_user_height = 0;
                 }
                 return;
             }
