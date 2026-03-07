@@ -857,15 +857,15 @@ class ScenePanel(RmlPanel):
             for absolute_index in range(start, end):
                 visible_rows.append(
                     self._make_visible_row_state(self._flat_rows[absolute_index], absolute_index))
-            self._visible_row_capacity = max(self._visible_row_capacity, len(visible_rows))
-            while len(visible_rows) < self._visible_row_capacity:
-                visible_rows.append(self._make_placeholder_row(start + len(visible_rows)))
             self._top_spacer_height = self._format_row_span_height(start)
             self._bottom_spacer_height = self._format_row_span_height(total_rows - end)
         else:
-            self._visible_row_capacity = 0
             self._top_spacer_height = "0dp"
             self._bottom_spacer_height = "0dp"
+
+        self._visible_row_capacity = max(self._visible_row_capacity, len(visible_rows))
+        while len(visible_rows) < self._visible_row_capacity:
+            visible_rows.append(self._make_placeholder_row(len(visible_rows)))
 
         self._handle.update_record_list("visible_rows", visible_rows)
         for name in ("show_tree",
