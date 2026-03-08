@@ -217,8 +217,8 @@ namespace lfs::vis::gui {
         }
     }
 
-    std::string RmlPanelHost::generateThemeRCSS() const {
-        const auto& p = lfs::vis::theme().palette;
+    std::string RmlPanelHost::generateThemeRCSS(const lfs::vis::Theme& t) const {
+        const auto& p = t.palette;
         const auto text = colorToRml(p.text);
         const auto text_dim = colorToRml(p.text_dim);
         const auto surface = colorToRml(p.surface);
@@ -269,7 +269,7 @@ namespace lfs::vis::gui {
             base_rcss_ = rml_theme::loadBaseRCSS(rcss_name);
         }
 
-        rml_theme::applyTheme(document_, base_rcss_, generateThemeRCSS());
+        rml_theme::applyTheme(document_, base_rcss_, rml_theme::generateAllThemeMedia([this](const auto& th) { return generateThemeRCSS(th); }));
         content_dirty_ = true;
         return true;
     }
@@ -511,11 +511,13 @@ namespace lfs::vis::gui {
 
         GLint prev_fbo = 0;
         fbo_.bind(&prev_fbo);
+        render->SetTargetFramebuffer(fbo_.fbo());
 
         render->BeginFrame();
         rml_context_->Render();
         render->EndFrame();
 
+        render->SetTargetFramebuffer(0);
         fbo_.unbind(prev_fbo);
 
         animation_active_ = (rml_context_->GetNextUpdateDelay() == 0);

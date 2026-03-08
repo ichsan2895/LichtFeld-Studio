@@ -5,6 +5,7 @@
 
 #include "gui/rmlui/rml_fbo.hpp"
 #include "sequencer/rml_sequencer_panel.hpp"
+#include <cstddef>
 #include <core/export.hpp>
 #include <string>
 
@@ -14,6 +15,7 @@ namespace Rml {
     class ElementDocument;
 } // namespace Rml
 
+namespace lfs::vis { struct Theme; }
 namespace lfs::vis::gui {
 
     class RmlUIManager;
@@ -45,7 +47,7 @@ namespace lfs::vis::gui {
     private:
         void initContext();
         void syncTheme();
-        std::string generateThemeRCSS() const;
+        std::string generateThemeRCSS(const lfs::vis::Theme& t) const;
 
         RmlUIManager* mgr_;
         std::string context_name_;
@@ -56,7 +58,8 @@ namespace lfs::vis::gui {
         RmlFBO fbo_;
 
         std::string base_rcss_;
-        float last_synced_text_[4] = {};
+        std::size_t last_theme_signature_ = 0;
+        bool has_theme_signature_ = false;
 
         int width_ = 0;
         int height_ = 0;

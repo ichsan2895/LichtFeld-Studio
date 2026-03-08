@@ -95,10 +95,9 @@ namespace lfs::vis::gui {
         tab_separator_el_ = nullptr;
     }
 
-    std::string RmlRightPanel::generateThemeRCSS() const {
+    std::string RmlRightPanel::generateThemeRCSS(const lfs::vis::Theme& t) const {
         using rml_theme::colorToRml;
         using rml_theme::colorToRmlAlpha;
-        const auto& t = lfs::vis::theme();
         const auto& p = t.palette;
 
         const auto tab_hover = colorToRmlAlpha(p.surface_bright, 0.5f);
@@ -140,15 +139,16 @@ namespace lfs::vis::gui {
         if (!document_)
             return false;
 
-        const auto& t = lfs::vis::theme();
-        if (t.name == last_theme_)
+        const std::size_t theme_signature = rml_theme::currentThemeSignature();
+        if (has_theme_signature_ && theme_signature == last_theme_signature_)
             return false;
-        last_theme_ = t.name;
+        last_theme_signature_ = theme_signature;
+        has_theme_signature_ = true;
 
         if (base_rcss_.empty())
             base_rcss_ = rml_theme::loadBaseRCSS("rmlui/right_panel.rcss");
 
-        rml_theme::applyTheme(document_, base_rcss_, generateThemeRCSS());
+        rml_theme::applyTheme(document_, base_rcss_, rml_theme::generateAllThemeMedia([this](const auto& th) { return generateThemeRCSS(th); }));
         return true;
     }
 
@@ -352,11 +352,13 @@ namespace lfs::vis::gui {
 
             GLint prev_fbo = 0;
             fbo_.bind(&prev_fbo);
+            render->SetTargetFramebuffer(fbo_.fbo());
 
             render->BeginFrame();
             rml_context_->Render();
             render->EndFrame();
 
+            render->SetTargetFramebuffer(0);
             fbo_.unbind(prev_fbo);
 
             last_fbo_w_ = w;

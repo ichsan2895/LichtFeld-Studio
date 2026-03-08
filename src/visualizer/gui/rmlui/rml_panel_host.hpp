@@ -18,6 +18,7 @@ namespace Rml {
     class ElementDocument;
 } // namespace Rml
 
+namespace lfs::vis { struct Theme; }
 namespace lfs::vis::gui {
 
     class RmlUIManager;
@@ -74,7 +75,7 @@ namespace lfs::vis::gui {
         static std::vector<uint32_t> drainTextInput();
         bool forwardInput(float panel_x, float panel_y);
         bool syncThemeProperties();
-        std::string generateThemeRCSS() const;
+        std::string generateThemeRCSS(const lfs::vis::Theme& t) const;
         bool loadDocument();
         void cacheContentElements();
         float computeScrollHeightCap() const;

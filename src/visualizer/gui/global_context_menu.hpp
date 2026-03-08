@@ -6,6 +6,7 @@
 
 #include "gui/rmlui/rml_fbo.hpp"
 #include <RmlUi/Core/EventListener.h>
+#include <cstddef>
 #include <core/export.hpp>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@ namespace Rml {
     class ElementDocument;
 } // namespace Rml
 
+namespace lfs::vis { struct Theme; }
 namespace lfs::vis::gui {
 
     struct PanelInputState;
@@ -49,7 +51,7 @@ namespace lfs::vis::gui {
     private:
         void initContext();
         void syncTheme();
-        std::string generateThemeRCSS() const;
+        std::string generateThemeRCSS(const lfs::vis::Theme& t) const;
         std::string buildInnerRML(const std::vector<ContextMenuItem>& items) const;
         void hide();
 
@@ -75,7 +77,8 @@ namespace lfs::vis::gui {
         std::string result_;
 
         std::string base_rcss_;
-        float last_synced_text_[4] = {};
+        std::size_t last_theme_signature_ = 0;
+        bool has_theme_signature_ = false;
         int width_ = 0;
         int height_ = 0;
     };

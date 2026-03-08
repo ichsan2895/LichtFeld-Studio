@@ -22,6 +22,7 @@
 #include "gui/panels/mesh2splat_panel.hpp"
 #include "gui/panels/python_console_panel.hpp"
 #include "gui/rmlui/rml_panel_host.hpp"
+#include "gui/rmlui/rml_theme.hpp"
 #include "gui/string_keys.hpp"
 #include "gui/ui_widgets.hpp"
 #include "gui/utils/file_association.hpp"
@@ -622,6 +623,9 @@ namespace lfs::vis::gui {
         });
 
         rmlui_manager_.init(viewer_->getWindow(), current_ui_scale_);
+        lfs::vis::setThemeChangeCallback([this](const std::string& theme_id) {
+            rmlui_manager_.activateTheme(theme_id);
+        });
         lfs::python::set_rml_manager(&rmlui_manager_);
 
         startup_overlay_.init(&rmlui_manager_);
@@ -972,7 +976,9 @@ namespace lfs::vis::gui {
             static auto last_check = std::chrono::steady_clock::now();
             const auto now = std::chrono::steady_clock::now();
             if (now - last_check > std::chrono::seconds(1)) {
-                checkThemeFileChanges();
+                if (checkThemeFileChanges()) {
+                    rml_theme::invalidateThemeMediaCache();
+                }
                 last_check = now;
             }
         }
@@ -1838,11 +1844,11 @@ namespace lfs::vis::gui {
     }
 
     void GuiManager::applyDefaultStyle() {
-        // Initialize theme system using saved preference
         const std::string preferred_theme = loadThemePreferenceName();
         if (!setThemeByName(preferred_theme)) {
             setTheme(darkTheme());
         }
+        rmlui_manager_.activateTheme(currentThemeId());
     }
 
     void GuiManager::showWindow(const std::string& name, bool show) {

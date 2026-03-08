@@ -279,9 +279,8 @@ namespace lfs::vis {
             el_quality_slider_->AddEventListener(Rml::EventId::Change, &transport_listener_);
     }
 
-    std::string RmlSequencerPanel::generateThemeRCSS() const {
-        const auto& p = lfs::vis::theme().palette;
-        const auto& t = lfs::vis::theme();
+    std::string RmlSequencerPanel::generateThemeRCSS(const lfs::vis::Theme& t) const {
+        const auto& p = t.palette;
 
         const auto surface_alpha = colorToRmlAlpha(p.surface, 0.95f);
         const auto border = colorToRmlAlpha(p.border, 0.4f);
@@ -387,7 +386,7 @@ namespace lfs::vis {
         if (base_rcss_.empty())
             base_rcss_ = gui::rml_theme::loadBaseRCSS("rmlui/sequencer.rcss");
 
-        gui::rml_theme::applyTheme(document_, base_rcss_, generateThemeRCSS());
+        gui::rml_theme::applyTheme(document_, base_rcss_, gui::rml_theme::generateAllThemeMedia([this](const auto& th) { return generateThemeRCSS(th); }));
     }
 
     void RmlSequencerPanel::updateButtonStates() {
@@ -752,11 +751,13 @@ namespace lfs::vis {
 
             GLint prev_fbo = 0;
             fbo_.bind(&prev_fbo);
+            render_iface->SetTargetFramebuffer(fbo_.fbo());
 
             render_iface->BeginFrame();
             rml_context_->Render();
             render_iface->EndFrame();
 
+            render_iface->SetTargetFramebuffer(0);
             fbo_.unbind(prev_fbo);
         }
 

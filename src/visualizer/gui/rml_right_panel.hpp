@@ -6,6 +6,7 @@
 
 #include "gui/rmlui/rml_fbo.hpp"
 #include <RmlUi/Core/DataModelHandle.h>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <glm/glm.hpp>
@@ -18,6 +19,7 @@ namespace Rml {
     class Element;
 } // namespace Rml
 
+namespace lfs::vis { struct Theme; }
 namespace lfs::vis::gui {
 
     class RmlUIManager;
@@ -60,7 +62,7 @@ namespace lfs::vis::gui {
 
     private:
         bool updateTheme();
-        std::string generateThemeRCSS() const;
+        std::string generateThemeRCSS(const lfs::vis::Theme& t) const;
         bool syncTabData(const std::vector<TabSnapshot>& tabs, const std::string& active_tab);
 
         RmlUIManager* rml_manager_ = nullptr;
@@ -78,7 +80,8 @@ namespace lfs::vis::gui {
         std::vector<TabSnapshot> tabs_;
         Rml::String active_tab_;
 
-        std::string last_theme_;
+        std::size_t last_theme_signature_ = 0;
+        bool has_theme_signature_ = false;
         std::string base_rcss_;
         bool wants_input_ = false;
 
