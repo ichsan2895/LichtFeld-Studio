@@ -230,7 +230,7 @@ class TrainingPanel(RmlPanel):
     space = "MAIN_PANEL_TAB"
     order = 20
     rml_template = "rmlui/training.rml"
-    rml_height_mode = "content"
+    rml_height_mode = "fill"
 
     def __init__(self):
         self._handle = None

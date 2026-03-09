@@ -36,6 +36,8 @@ body.docked-panel {
     display: flex;
     align-items: center;
     padding: 0 10dp;
+    border-bottom-width: 1dp;
+    border-bottom-color: rgba(88, 91, 112, 128);
 }
 
 #title-text {
@@ -44,9 +46,10 @@ body.docked-panel {
 }
 
 #close-btn {
-    font-size: 13dp;
+    font-size: 16dp;
     cursor: pointer;
     padding: 0 6dp;
+    line-height: 28dp;
 }
 
 #content-wrap {
@@ -321,10 +324,7 @@ progress fill {
 }
 
 .section-content.collapsed {
-    display: block;
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
+    display: none;
 }
 
 /* ── Color Controls ─────────────────────────────────────── */
@@ -342,7 +342,7 @@ progress fill {
 
 .color-comp {
     display: inline-block;
-    width: 44dp;
+    min-width: 30dp;
     font-size: 11dp;
     color: #a6adc8;
     background-color: #313244;
@@ -351,7 +351,7 @@ progress fill {
     padding: 1dp 4dp;
     margin-right: 2dp;
     text-align: right;
-    flex-shrink: 0;
+    flex: 1;
 }
 
 .color-hex {
@@ -677,8 +677,9 @@ crf-curve {
 .num-step-btn {
     width: 20dp;
     height: 18dp;
-    padding: 0;
+    padding: 0 0 1dp 0;
     text-align: center;
+    line-height: 16dp;
     font-size: 10dp;
     border-width: 1dp;
     margin-left: 2dp;

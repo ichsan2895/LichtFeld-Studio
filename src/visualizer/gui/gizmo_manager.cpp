@@ -1147,10 +1147,11 @@ namespace lfs::vis::gui {
         const bool mouse_in_gizmo = mouse.x >= gizmo_x && mouse.x <= gizmo_x + VIEWPORT_GIZMO_SIZE &&
                                     mouse.y >= gizmo_y && mouse.y <= gizmo_y + VIEWPORT_GIZMO_SIZE;
 
-        const int hovered_axis = engine->hitTestViewportGizmo(glm::vec2(mouse.x, mouse.y), vp_pos, vp_size);
+        const bool ui_wants_mouse = ImGui::GetIO().WantCaptureMouse;
+        const int hovered_axis = ui_wants_mouse ? -1 : engine->hitTestViewportGizmo(glm::vec2(mouse.x, mouse.y), vp_pos, vp_size);
         engine->setViewportGizmoHover(hovered_axis);
 
-        if (!ImGui::GetIO().WantCaptureMouse) {
+        if (!ui_wants_mouse) {
             const glm::vec2 capture_mouse_pos(mouse.x, mouse.y);
             const float time = static_cast<float>(ImGui::GetTime());
 

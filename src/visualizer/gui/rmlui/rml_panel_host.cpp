@@ -585,6 +585,7 @@ namespace lfs::vis::gui {
             last_layout_h_ = ph;
             restoreScrollTop(saved_scroll);
         }
+
         content_dirty_ = false;
         if (height_mode_ != HeightMode::Content)
             last_content_height_ = display_h;
@@ -684,7 +685,10 @@ namespace lfs::vis::gui {
                 display_h = static_cast<float>(ph);
             }
         } else {
-            ph = std::min(kMaxFboSize, static_cast<int>(requested_h));
+            float effective_h = requested_h;
+            if (clip_y_min_ >= 0.0f && clip_y_max_ > clip_y_min_)
+                effective_h = std::min(effective_h, clip_y_max_ - clip_y_min_);
+            ph = std::min(kMaxFboSize, static_cast<int>(effective_h));
             display_h = static_cast<float>(ph);
         }
     }

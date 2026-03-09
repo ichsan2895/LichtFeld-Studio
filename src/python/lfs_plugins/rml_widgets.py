@@ -44,15 +44,10 @@ def sync_section_state(content_element, expanded, header_element=None, arrow_ele
     _apply_section_visual_state(expanded, header_element, arrow_element)
     content_element.set_class("collapsed", not expanded)
 
-    if expanded:
-        content_element.remove_property("max-height")
-        content_element.remove_property("opacity")
-        content_element.remove_property("pointer-events")
-        return
-
-    content_element.set_property("max-height", "0px")
-    content_element.set_property("opacity", "0")
-    content_element.set_property("pointer-events", "none")
+    content_element.remove_property("max-height")
+    content_element.remove_property("opacity")
+    content_element.remove_property("pointer-events")
+    content_element.remove_property("display")
 
 
 def animate_section_toggle(content_element, expanding, arrow_element=None,
@@ -61,19 +56,20 @@ def animate_section_toggle(content_element, expanding, arrow_element=None,
     if not content_element:
         return
 
-    current_h = max(content_element.client_height, 0)
-    target_h = max(content_element.scroll_height, current_h)
-    duration = _section_duration(target_h, duration)
-    fade_duration = max(0.1, min(0.18, duration * 0.7))
-
     _apply_section_visual_state(expanding, header_element, arrow_element)
 
     if expanding:
         content_element.set_class("collapsed", False)
+        content_element.remove_property("display")
         content_element.remove_property("pointer-events")
+
+        current_h = max(content_element.client_height, 0)
+        target_h = max(content_element.scroll_height, current_h)
         if target_h <= 0:
             sync_section_state(content_element, True, header_element, arrow_element)
             return
+        duration = _section_duration(target_h, duration)
+        fade_duration = max(0.1, min(0.18, duration * 0.7))
         content_element.animate("max-height", f"{target_h}px", duration, "cubic-out",
                                 f"{current_h}px" if current_h > 0 else "0px",
                                 remove_on_complete=True)
@@ -81,12 +77,14 @@ def animate_section_toggle(content_element, expanding, arrow_element=None,
                                 remove_on_complete=True)
         return
 
+    content_element.set_property("pointer-events", "none")
+    current_h = max(content_element.client_height, 0)
+    target_h = max(content_element.scroll_height, current_h)
     if target_h <= 0:
         sync_section_state(content_element, False, header_element, arrow_element)
         return
-
-    content_element.set_class("collapsed", True)
-    content_element.set_property("pointer-events", "none")
+    duration = _section_duration(target_h, duration)
+    fade_duration = max(0.1, min(0.18, duration * 0.7))
     content_element.animate("max-height", "0px", duration, "cubic-in-out",
                             f"{target_h}px")
     content_element.animate("opacity", "0", fade_duration, "quadratic-out", "1")

@@ -218,8 +218,10 @@ namespace lfs::vis::gui::rml_theme {
         const auto btn_error_a = colorToRml(blend(p.surface, p.error, ta));
         const auto window_surface =
             colorToRml(t.isLightTheme() ? lighten(p.surface, 0.015f) : lighten(p.surface, 0.02f));
-        const auto title_surface =
-            colorToRml(t.isLightTheme() ? darken(p.surface, 0.02f) : lighten(p.surface, 0.045f));
+        const auto title_surface_col = t.isLightTheme() ? darken(p.surface, 0.02f) : lighten(p.surface, 0.045f);
+        const auto title_surface = colorToRml(title_surface_col);
+        const auto title_grad = std::format("decorator: vertical-gradient({} {}); background-color: transparent",
+                                            colorToRml(lighten(title_surface_col, 0.12f)), colorToRml(title_surface_col));
 
         const auto success = colorToRml(p.success);
         const auto warning = colorToRml(p.warning);
@@ -253,7 +255,7 @@ namespace lfs::vis::gui::rml_theme {
 
         return std::format(
                    "#window-frame {{ background-color: {0}; border-color: {1}; border-radius: {7}dp; }}\n"
-                   "#title-bar {{ background-color: {2}; border-top-left-radius: {7}dp; border-top-right-radius: {7}dp; }}\n"
+                   "#title-bar {{ {8}; border-top-left-radius: {7}dp; border-top-right-radius: {7}dp; border-bottom-color: {1}; }}\n"
                    "#title-text {{ color: {3}; }}\n"
                    "#close-btn {{ color: {4}; }}\n"
                    "#close-btn:hover {{ color: {5}; }}\n"
@@ -271,7 +273,7 @@ namespace lfs::vis::gui::rml_theme {
                    ".play-icon {{ color: {6}; }}\n"
                    ".card-title {{ color: {4}; }}\n",
                    window_surface, border, title_surface, text, text_dim,
-                   error_col, primary, window_rounding) +
+                   error_col, primary, window_rounding, title_grad) +
                    check_decorator +
                    arrow_decorator +
                    std::format(
