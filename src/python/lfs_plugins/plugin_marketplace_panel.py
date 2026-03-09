@@ -77,7 +77,7 @@ class PluginMarketplacePanel(RmlPanel):
         self._handle = None
         self._last_card_phases: Dict[str, Tuple] = {}
         self._entries_dirty = True
-        self._catalog_updated = False
+        self._needs_resort = True
         self._prev_snapshot_key: Optional[Tuple] = None
         self._cached_entries: List[MarketplacePluginEntry] = []
         self._cached_card_ids: List[str] = []
@@ -159,6 +159,7 @@ class PluginMarketplacePanel(RmlPanel):
         if idx != self._install_filter_idx:
             self._install_filter_idx = idx
             self._entries_dirty = True
+            self._needs_resort = True
 
     def _set_sort_idx(self, v):
         try:
@@ -168,6 +169,7 @@ class PluginMarketplacePanel(RmlPanel):
         if idx != self._sort_idx:
             self._sort_idx = idx
             self._entries_dirty = True
+            self._needs_resort = True
 
     # ── Lifecycle ─────────────────────────────────────────────
 
@@ -188,6 +190,7 @@ class PluginMarketplacePanel(RmlPanel):
         grid_el = doc.get_element_by_id("card-grid")
         if grid_el:
             grid_el.add_event_listener("click", self._on_card_click)
+            grid_el.add_event_listener("change", self._on_card_click)
 
     def on_update(self, doc):
         from .manager import PluginManager
@@ -201,17 +204,16 @@ class PluginMarketplacePanel(RmlPanel):
         if snapshot_key != self._prev_snapshot_key:
             self._prev_snapshot_key = snapshot_key
             self._entries_dirty = True
-            self._catalog_updated = True
 
         if self._entries_dirty:
             self._entries_dirty = False
-            catalog_updated = self._catalog_updated
-            self._catalog_updated = False
             entries = self._with_local_plugins(entries_raw, mgr)
             installed_lookup = self._get_installed_plugin_lookup(mgr)
             installed_versions = self._get_installed_plugin_versions(mgr)
             installed_names = set(installed_lookup.values())
-            preserve = catalog_updated and bool(self._cached_card_ids)
+            needs_resort = self._needs_resort
+            self._needs_resort = False
+            preserve = not needs_resort and bool(self._cached_card_ids)
             entries = self._filter_and_sort_entries(
                 entries, set(installed_lookup.keys()), installed_names,
                 preserve_order=preserve,
@@ -314,12 +316,10 @@ class PluginMarketplacePanel(RmlPanel):
         is_remote_installed = is_installed and not is_local
         is_local_with_github = is_installed and is_local and has_github
 
-        show_startup_checked = False
-        show_startup_unchecked = False
-        if buttons_idle and is_installed and plugin_name:
-            startup = SettingsManager.instance().get(plugin_name).get("load_on_startup", False)
-            show_startup_checked = startup
-            show_startup_unchecked = not startup
+        show_startup = buttons_idle and is_installed and bool(plugin_name)
+        startup_checked = False
+        if show_startup:
+            startup_checked = SettingsManager.instance().get(plugin_name).get("load_on_startup", False)
 
         return {
             "card_id": card_id,
@@ -347,8 +347,8 @@ class PluginMarketplacePanel(RmlPanel):
             "show_reload": buttons_idle and is_remote_installed and plugin_state == PluginState.ACTIVE,
             "show_update": buttons_idle and (is_local_with_github or (is_remote_installed and plugin_state != PluginState.ACTIVE)),
             "show_uninstall": buttons_idle and is_installed,
-            "show_startup_checked": show_startup_checked,
-            "show_startup_unchecked": show_startup_unchecked,
+            "show_startup": show_startup,
+            "startup_checked": startup_checked,
         }
 
     # ── Card state updates (per-frame, minimal DOM touches) ───
@@ -503,11 +503,12 @@ class PluginMarketplacePanel(RmlPanel):
 
         if action == "startup":
             if plugin_name:
-                prefs = SettingsManager.instance().get(plugin_name)
                 cb_el = self._find_element_with_attr(target, "type", "checkbox")
-                checked = cb_el.has_attribute("checked") if cb_el else not prefs.get("load_on_startup", False)
-                prefs.set("load_on_startup", checked)
-                self._entries_dirty = True
+                checked = cb_el.has_attribute("checked") if cb_el else False
+                prefs = SettingsManager.instance().get(plugin_name)
+                if prefs.get("load_on_startup", False) != checked:
+                    prefs.set("load_on_startup", checked)
+                    self._entries_dirty = True
             return
 
         if not card_id:
@@ -837,8 +838,14 @@ class PluginMarketplacePanel(RmlPanel):
 
         tr = lf.ui.tr
 
-        def do_reload(on_progress):
-            mgr.unload(name)
+        if not mgr.unload(name):
+            with self._lock:
+                state = self._card_ops.setdefault(card_id, CardOpState())
+                state.phase = CardOpPhase.ERROR
+                state.message = tr("plugin_manager.status.unload_failed")
+            return
+
+        def do_load(on_progress):
             ok = mgr.load(name, on_progress=on_progress)
             if not ok:
                 err = mgr.get_error(name) or tr("plugin_manager.status.reload_failed")
@@ -848,7 +855,7 @@ class PluginMarketplacePanel(RmlPanel):
 
         self._run_async(
             card_id,
-            do_reload,
+            do_load,
             tr("plugin_manager.status.reloaded").format(name=name),
             tr("plugin_manager.status.reload_failed"),
         )

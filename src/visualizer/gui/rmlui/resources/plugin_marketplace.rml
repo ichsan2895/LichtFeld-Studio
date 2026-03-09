@@ -97,20 +97,15 @@
               data-attr-id="'feedback-' + p.card_id + '-error'"></span>
       </div>
 
-      <!-- Startup checkbox (two variants for checked state) -->
-      <div class="card-startup-row" data-if="p.show_startup_checked">
-        <input type="checkbox" checked="checked"
-               data-action="startup"
-               data-attr-data-card-id="p.card_id"
-               data-attr-data-plugin="p.plugin_name" />
-        <span class="card-startup-label text-disabled">{{ startup_label }}</span>
-      </div>
-      <div class="card-startup-row" data-if="p.show_startup_unchecked">
-        <input type="checkbox"
-               data-action="startup"
-               data-attr-data-card-id="p.card_id"
-               data-attr-data-plugin="p.plugin_name" />
-        <span class="card-startup-label text-disabled">{{ startup_label }}</span>
+      <div class="card-startup-row" data-if="p.show_startup">
+        <label>
+          <input type="checkbox"
+                 data-attrif-checked="p.startup_checked"
+                 data-action="startup"
+                 data-attr-data-card-id="p.card_id"
+                 data-attr-data-plugin="p.plugin_name" />
+          <span class="card-startup-label text-disabled">{{ startup_label }}</span>
+        </label>
       </div>
 
       <!-- Action buttons -->
