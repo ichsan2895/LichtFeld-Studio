@@ -6,7 +6,6 @@
 // clang-format on
 
 #include "sequencer/rml_sequencer_panel.hpp"
-#include "sequencer/timeline_view_math.hpp"
 #include "core/events.hpp"
 #include "core/logger.hpp"
 #include "gui/rmlui/rml_theme.hpp"
@@ -17,6 +16,7 @@
 #include "internal/resource_paths.hpp"
 #include "io/video/video_export_options.hpp"
 #include "rendering/render_constants.hpp"
+#include "sequencer/timeline_view_math.hpp"
 #include "theme/theme.hpp"
 
 #include <RmlUi/Core.h>
@@ -123,8 +123,7 @@ namespace lfs::vis {
         else if (id == "btn-loop") {
             ctrl.toggleLoop();
             lfs::core::events::state::KeyframeListChanged{.count = ctrl.timeline().size()}.emit();
-        }
-        else if (id == "btn-add")
+        } else if (id == "btn-add")
             lfs::core::events::cmd::SequencerAddKeyframe{}.emit();
         else if (id == "btn-camera-path")
             ui.show_camera_path = !ui.show_camera_path;
