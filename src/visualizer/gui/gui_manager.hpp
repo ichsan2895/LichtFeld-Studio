@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "core/export.hpp"
 #include "core/cuda_version.hpp"
 #include "core/events.hpp"
+#include "core/export.hpp"
 #include "core/parameters.hpp"
 #include "core/path_utils.hpp"
 #include "gui/async_task_manager.hpp"

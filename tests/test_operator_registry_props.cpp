@@ -16,8 +16,8 @@
 #include "scene/scene_manager.hpp"
 #include "visualizer/gui_capabilities.hpp"
 
-#include <gtest/gtest.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <gtest/gtest.h>
 #include <memory>
 #include <vector>
 

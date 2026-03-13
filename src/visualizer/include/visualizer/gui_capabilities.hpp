@@ -18,7 +18,7 @@
 namespace lfs::vis {
     class RenderingManager;
     class SceneManager;
-}
+} // namespace lfs::vis
 
 namespace lfs::vis::cap {
 
@@ -69,7 +69,7 @@ namespace lfs::vis::cap {
     [[nodiscard]] LFS_VIS_API glm::mat4 composeTransform(const TransformComponents& components);
 
     [[nodiscard]] LFS_VIS_API SelectionSnapshot getSelectionSnapshot(const core::Scene& scene,
-                                                                    int max_indices = 100000);
+                                                                     int max_indices = 100000);
     [[nodiscard]] LFS_VIS_API std::expected<void, std::string> clearGaussianSelection(SceneManager& scene_manager);
     [[nodiscard]] LFS_VIS_API std::expected<void, std::string> clearNodeSelection(SceneManager& scene_manager);
     [[nodiscard]] LFS_VIS_API std::expected<void, std::string> selectNode(SceneManager& scene_manager,

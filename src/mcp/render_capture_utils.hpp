@@ -46,9 +46,9 @@ namespace lfs::mcp {
         }
 
         inline std::expected<std::pair<int, int>, std::string> resolve_capture_size(int src_width,
-                                                                                     int src_height,
-                                                                                     int width,
-                                                                                     int height) {
+                                                                                    int src_height,
+                                                                                    int width,
+                                                                                    int height) {
             if (width <= 0 && height <= 0) {
                 return std::pair{src_width, src_height};
             }
@@ -71,11 +71,11 @@ namespace lfs::mcp {
     } // namespace detail
 
     inline std::expected<std::string, std::string> encode_pixels_to_base64(const uint8_t* src_pixels,
-                                                                            int src_width,
-                                                                            int src_height,
-                                                                            int channels,
-                                                                            int width = 0,
-                                                                            int height = 0) {
+                                                                           int src_width,
+                                                                           int src_height,
+                                                                           int channels,
+                                                                           int width = 0,
+                                                                           int height = 0) {
         if (!src_pixels)
             return std::unexpected("Pixel buffer is null");
         if (src_width <= 0 || src_height <= 0)
@@ -114,8 +114,8 @@ namespace lfs::mcp {
     }
 
     inline std::expected<std::string, std::string> encode_render_tensor_to_base64(core::Tensor image,
-                                                                                   int width = 0,
-                                                                                   int height = 0) {
+                                                                                  int width = 0,
+                                                                                  int height = 0) {
         image = image.clone().to(core::Device::CPU).to(core::DataType::Float32);
         if (image.ndim() == 4)
             image = image.squeeze(0);
