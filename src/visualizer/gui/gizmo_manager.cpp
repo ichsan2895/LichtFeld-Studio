@@ -345,9 +345,14 @@ namespace lfs::vis::gui {
             return;
 
         const auto& scene = scene_manager->getScene();
-        const auto selected_names = scene_manager->getSelectedNodeNames();
+        const auto transform_targets = cap::resolveEditableTransformSelection(
+            *scene_manager, std::nullopt, cap::TransformTargetPolicy::RequireAllEditable);
+        if (!transform_targets)
+            return;
+
+        const auto& target_names = transform_targets->node_names;
         bool any_visible = false;
-        for (const auto& name : selected_names) {
+        for (const auto& name : target_names) {
             if (const auto* node = scene.getNode(name)) {
                 if (scene.isNodeEffectivelyVisible(node->id)) {
                     any_visible = true;
@@ -363,7 +368,7 @@ namespace lfs::vis::gui {
             return;
 
         const auto& settings = render_manager->getSettings();
-        const bool is_multi_selection = (selected_names.size() > 1);
+        const bool is_multi_selection = (target_names.size() > 1);
 
         auto& vp = ctx.viewer->getViewport();
         const glm::mat4 view = vp.getViewMatrix();
@@ -375,13 +380,13 @@ namespace lfs::vis::gui {
 
         const glm::vec3 local_pivot = (pivot_mode_ == PivotMode::Origin)
                                           ? glm::vec3(0.0f)
-                                          : scene_manager->getSelectionCenter();
+                                          : transform_targets->local_center;
 
         bool has_valid_bounds = false;
         const bool use_bounds_scale = !is_multi_selection && node_gizmo_operation_ == ImGuizmo::SCALE;
 
-        const auto* first_node = (!is_multi_selection && !selected_names.empty())
-                                     ? scene.getNode(*selected_names.begin())
+        const auto* first_node = (!is_multi_selection && !target_names.empty())
+                                     ? scene.getNode(target_names.front())
                                      : nullptr;
 
         glm::vec3 bounds_min(0.0f), bounds_max(0.0f);
@@ -446,13 +451,16 @@ namespace lfs::vis::gui {
             const glm::vec3 gizmo_position = node_gizmo_active_
                                                  ? gizmo_pivot_
                                                  : (is_multi_selection
-                                                        ? scene_manager->getSelectionWorldCenter()
-                                                        : glm::vec3(scene_manager->getSelectedNodeWorldTransform() *
-                                                                    glm::vec4(local_pivot, 1.0f)));
+                                                        ? transform_targets->world_center
+                                                        : (first_node
+                                                               ? glm::vec3(scene.getWorldTransform(first_node->id) *
+                                                                           glm::vec4(local_pivot, 1.0f))
+                                                               : glm::vec3(0.0f)));
             gizmo_matrix[3] = glm::vec4(gizmo_position, 1.0f);
 
             if (!is_multi_selection && !use_world_space) {
-                const glm::mat3 rotation_scale(scene_manager->getSelectedNodeWorldTransform());
+                const glm::mat3 rotation_scale(first_node ? scene.getWorldTransform(first_node->id)
+                                                          : glm::mat4(1.0f));
                 gizmo_matrix[0] = glm::vec4(rotation_scale[0], 0.0f);
                 gizmo_matrix[1] = glm::vec4(rotation_scale[1], 0.0f);
                 gizmo_matrix[2] = glm::vec4(rotation_scale[2], 0.0f);
@@ -528,14 +536,14 @@ namespace lfs::vis::gui {
             }
 
             std::unordered_set<core::NodeId> selected_ids;
-            for (const auto& name : selected_names) {
+            for (const auto& name : target_names) {
                 if (const auto* node = scene.getNode(name)) {
                     selected_ids.insert(node->id);
                 }
             }
 
             node_gizmo_node_names_.clear();
-            for (const auto& name : selected_names) {
+            for (const auto& name : target_names) {
                 const auto* node = scene.getNode(name);
                 if (!node)
                     continue;
@@ -687,7 +695,7 @@ namespace lfs::vis::gui {
                 const glm::mat3 new_rs(new_transform);
                 const glm::vec3 scaled_center = new_rs * bounds_center_local;
 
-                const auto* node = scene.getNode(*selected_names.begin());
+                const auto* node = target_names.empty() ? nullptr : scene.getNode(target_names.front());
                 const glm::mat4 parent_world_inv = (node && node->parent_id != core::NULL_NODE)
                                                        ? glm::inverse(scene.getWorldTransform(node->parent_id))
                                                        : glm::mat4(1.0f);
@@ -700,7 +708,7 @@ namespace lfs::vis::gui {
                 const glm::vec3 new_gizmo_pos_world = glm::vec3(gizmo_matrix[3]);
 
                 const auto& sm_scene = scene_manager->getScene();
-                const auto* node = sm_scene.getNode(*selected_names.begin());
+                const auto* node = target_names.empty() ? nullptr : sm_scene.getNode(target_names.front());
                 const glm::mat4 parent_world_inv = (node && node->parent_id != core::NULL_NODE)
                                                        ? glm::inverse(sm_scene.getWorldTransform(node->parent_id))
                                                        : glm::mat4(1.0f);
@@ -758,7 +766,7 @@ namespace lfs::vis::gui {
         }
 
         if (node_gizmo_active_ && render_manager) {
-            for (const auto& name : selected_names) {
+            for (const auto& name : target_names) {
                 const auto* node = scene.getNode(name);
                 if (!node || node->type != core::NodeType::SPLAT)
                     continue;

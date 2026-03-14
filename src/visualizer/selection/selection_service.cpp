@@ -263,7 +263,12 @@ namespace lfs::vis {
         }
 
         auto& selection = resetBoolScratchBuffer(command_selection_buffer_, screen_positions->size(0));
-        rendering::rect_select_tensor(*screen_positions, x0, y0, x1, y1, selection);
+        rendering::rect_select_tensor(*screen_positions,
+                                      std::min(x0, x1),
+                                      std::min(y0, y1),
+                                      std::max(x0, x1),
+                                      std::max(y0, y1),
+                                      selection);
         return commitSelection(selection, mode, effectiveNodeMask(true), defaultFilterState(), "selection.rect");
     }
 
@@ -800,7 +805,8 @@ namespace lfs::vis {
         auto entry = std::make_unique<op::SceneSnapshot>(*scene_manager_, undo_name);
         entry->captureSelection();
 
-        auto new_selection = std::make_shared<core::Tensor>(output_mask);
+        // Snapshot the selection result before reusing the rotating output buffer.
+        auto new_selection = std::make_shared<core::Tensor>(output_mask.clone());
         scene.setSelectionMask(new_selection);
 
         entry->captureAfter();
