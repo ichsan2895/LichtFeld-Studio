@@ -727,11 +727,16 @@ namespace lfs::vis::gui {
         line_renderer_.end();
 
         if (mouse_in_viewport && !ImGui::IsAnyItemHovered() &&
-            !overlay_->wantsInput()) {
-            if (hovered_keyframe.has_value() && input.mouse_clicked[0] && !ImGuizmo::IsOver()) {
-                const auto* const hovered = timeline.getKeyframe(*hovered_keyframe);
-                if (hovered && !hovered->is_loop_point) {
+            !overlay_->wantsInput() && hovered_keyframe.has_value() && !ImGuizmo::IsOver()) {
+            const auto* const hovered = timeline.getKeyframe(*hovered_keyframe);
+            if (hovered && !hovered->is_loop_point) {
+                if (input.mouse_clicked[0]) {
                     beginViewportKeyframeEdit(*hovered_keyframe);
+                    guiFocusState().want_capture_mouse = true;
+                }
+                if (input.mouse_clicked[1]) {
+                    overlay_->showContextMenu(mouse_x, mouse_y, hovered_keyframe,
+                                              hovered->time, keyframe_gizmo_op_);
                     guiFocusState().want_capture_mouse = true;
                 }
             }
