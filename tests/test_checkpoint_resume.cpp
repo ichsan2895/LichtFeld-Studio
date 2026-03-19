@@ -72,9 +72,9 @@ namespace {
         {
             auto params = createParams(phase_one_iterations);
             params.optimization.save_steps = fixed_horizon_resume
-                                                ? std::vector<size_t>{static_cast<size_t>(CHECKPOINT_ITER)}
-                                                : std::vector<size_t>{static_cast<size_t>(CHECKPOINT_ITER / 2),
-                                                                      static_cast<size_t>(CHECKPOINT_ITER)};
+                                                 ? std::vector<size_t>{static_cast<size_t>(CHECKPOINT_ITER)}
+                                                 : std::vector<size_t>{static_cast<size_t>(CHECKPOINT_ITER / 2),
+                                                                       static_cast<size_t>(CHECKPOINT_ITER)};
             lfs::core::Scene scene;
 
             auto load_result = lfs::training::loadTrainingDataIntoScene(params, scene);

@@ -41,7 +41,7 @@ namespace lfs::vis::gui {
         };
 
         [[nodiscard]] DialogFilter makeFilter(std::string name,
-                                             std::vector<std::string> extensions) {
+                                              std::vector<std::string> extensions) {
             return DialogFilter{
                 .name = std::move(name),
                 .extensions = std::move(extensions),

@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later */
 
 #include "gui/panels/python_console_panel.hpp"
-#include "core/path_utils.hpp"
 #include "core/events.hpp"
+#include "core/path_utils.hpp"
 #include "gui/editor/python_editor.hpp"
 #include "gui/gui_focus_state.hpp"
 #include "gui/terminal/terminal_widget.hpp"
