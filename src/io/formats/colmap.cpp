@@ -610,7 +610,7 @@ namespace lfs::io {
 
         LOG_TIMER_TRACE("Assemble COLMAP cameras");
 
-        std::filesystem::path images_path = base_path / images_folder;
+        std::filesystem::path images_path = base_path / lfs::core::utf8_to_path(images_folder);
 
         if (!std::filesystem::exists(images_path)) {
             return make_error(ErrorCode::PATH_NOT_FOUND,
@@ -628,12 +628,14 @@ namespace lfs::io {
 
         for (size_t i = 0; i < images.size(); ++i) {
             const ImageData& img = images[i];
+            const std::filesystem::path image_rel_path = lfs::core::utf8_to_path(img.name);
+            const std::filesystem::path image_path = images_path / image_rel_path;
 
             auto it = cam_map.find(img.camera_id);
             if (it == cam_map.end()) {
                 return make_error(ErrorCode::CORRUPTED_DATA,
                                   std::format("Camera ID {} not found for image '{}'", img.camera_id, img.name),
-                                  images_path / img.name);
+                                  image_path);
             }
 
             const auto& cam_data = it->second;
@@ -671,7 +673,7 @@ namespace lfs::io {
             if (model_it == camera_model_ids.end()) {
                 return make_error(ErrorCode::UNSUPPORTED_FORMAT,
                                   std::format("Invalid camera model ID {} for image '{}'", cam_data.model_id, img.name),
-                                  images_path / img.name);
+                                  image_path);
             }
 
             CAMERA_MODEL model = model_it->second.first;
@@ -780,19 +782,19 @@ namespace lfs::io {
             case CAMERA_MODEL::FOV:
                 return make_error(ErrorCode::UNSUPPORTED_FORMAT,
                                   std::format("FOV camera model not supported for image '{}'", img.name),
-                                  images_path / img.name);
+                                  image_path);
 
             default:
                 return make_error(ErrorCode::UNSUPPORTED_FORMAT,
                                   std::format("Unsupported camera model for image '{}'", img.name),
-                                  images_path / img.name);
+                                  image_path);
             }
 
             std::filesystem::path mask_path = mask_cache.find(img.name);
 
             // Validate mask dimensions match image dimensions
             if (!mask_path.empty()) {
-                auto [img_w, img_h, img_c] = lfs::core::get_image_info(images_path / img.name);
+                auto [img_w, img_h, img_c] = lfs::core::get_image_info(image_path);
                 auto [mask_w, mask_h, mask_c] = lfs::core::get_image_info(mask_path);
                 if (img_w != mask_w || img_h != mask_h) {
                     return make_error(ErrorCode::MASK_SIZE_MISMATCH,
@@ -813,7 +815,7 @@ namespace lfs::io {
                 tangential_dist,
                 camera_model_type,
                 img.name,
-                images_path / img.name,
+                image_path,
                 mask_path,
                 cam_data.width,
                 cam_data.height,

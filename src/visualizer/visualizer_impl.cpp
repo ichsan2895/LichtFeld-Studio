@@ -818,7 +818,8 @@ namespace lfs::vis {
         });
 
         state::SceneLoaded::when([](const auto& event) {
-            python::update_scene(true, event.path.string().c_str());
+            const std::string path_utf8 = core::path_to_utf8(event.path);
+            python::update_scene(true, path_utf8.c_str());
         });
 
         state::SceneCleared::when([](const auto&) {

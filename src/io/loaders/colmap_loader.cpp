@@ -6,6 +6,7 @@
 #include "core/camera.hpp"
 #include "core/image_io.hpp"
 #include "core/logger.hpp"
+#include "core/path_utils.hpp"
 #include "core/point_cloud.hpp"
 #include "formats/colmap.hpp"
 #include "formats/ply.hpp"
@@ -101,7 +102,7 @@ namespace lfs::io {
 
         // Determine images folder
         std::string actual_images_folder = options.images_folder;
-        std::filesystem::path image_dir = path / actual_images_folder;
+        std::filesystem::path image_dir = path / lfs::core::utf8_to_path(actual_images_folder);
 
         auto is_dataset_root = [&](const std::filesystem::path& candidate) {
             if (candidate.empty()) {

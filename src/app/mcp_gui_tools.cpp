@@ -1701,7 +1701,7 @@ namespace lfs::app {
                 if (!result)
                     return json{{"error", result.error()}};
 
-                return json{{"success", true}, {"path", path.string()}};
+                return json{{"success", true}, {"path", core::path_to_utf8(path)}};
             });
 
         mcp::register_shared_scene_tools(mcp::SharedSceneToolBackend{

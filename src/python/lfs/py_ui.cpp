@@ -3989,7 +3989,7 @@ namespace lfs::python {
                     if (g_show_dataset_popup_callback && !g_show_dataset_popup_callback.is_none()) {
                         nb::gil_scoped_acquire guard;
                         try {
-                            g_show_dataset_popup_callback(e.dataset_path.string());
+                            g_show_dataset_popup_callback(lfs::core::path_to_utf8(e.dataset_path));
                         } catch (const std::exception& ex) {
                             LOG_ERROR("ShowDatasetLoadPopup callback error: {}", ex.what());
                         }
@@ -4007,7 +4007,7 @@ namespace lfs::python {
                     if (g_show_resume_popup_callback && !g_show_resume_popup_callback.is_none()) {
                         nb::gil_scoped_acquire guard;
                         try {
-                            g_show_resume_popup_callback(e.checkpoint_path.string());
+                            g_show_resume_popup_callback(lfs::core::path_to_utf8(e.checkpoint_path));
                         } catch (const std::exception& ex) {
                             LOG_ERROR("ShowResumeCheckpointPopup callback error: {}", ex.what());
                         }
