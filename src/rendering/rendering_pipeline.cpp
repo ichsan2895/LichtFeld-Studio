@@ -21,7 +21,7 @@ namespace lfs::rendering {
                                                       const size_t gaussian_count) {
             return tensor == nullptr || !tensor->is_valid() || tensor->numel() == gaussian_count;
         }
-    }
+    } // namespace
 
     RenderingPipeline::RenderingPipeline()
         : background_(Tensor::zeros({3}, lfs::core::Device::CUDA, lfs::core::DataType::Float32)) {
