@@ -24,7 +24,7 @@
   "enable_eval": false,
   "enable_save_eval_images": true,
   "mip_filter": false,
-  "use_bilateral_grid": false,
+  "bilateral_grid": false,
   "bg_modulation": false,
   "bilateral_grid_X": 16,
   "bilateral_grid_Y": 16,
